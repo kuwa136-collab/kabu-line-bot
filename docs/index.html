@@ -6,184 +6,474 @@
   <title>株クラAI分析レポート</title>
   <style>
     :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #5b6472;
-      --line: #d7dfeb;
-      --accent: #1d4ed8;
-      --accent-soft: #e8f0ff;
-      --warn-soft: #fff4df;
+      --bg: #f3efe7;
+      --paper: rgba(255, 252, 247, 0.92);
+      --paper-strong: #fffdf8;
+      --ink: #18212b;
+      --muted: #5f6a73;
+      --line: rgba(24, 33, 43, 0.12);
+      --navy: #183a63;
+      --navy-soft: rgba(24, 58, 99, 0.08);
+      --gold: #b57a22;
+      --gold-soft: rgba(181, 122, 34, 0.12);
+      --shadow: 0 18px 48px rgba(49, 45, 36, 0.12);
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
-      color: var(--text);
+      color: var(--ink);
+      font-family: "BIZ UDPGothic", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(181, 122, 34, 0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(24, 58, 99, 0.14), transparent 28%),
+        linear-gradient(180deg, #faf6ef 0%, var(--bg) 100%);
     }
-    .wrap {
-      max-width: 1080px;
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(24, 33, 43, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 33, 43, 0.02) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 80%);
+    }
+
+    .page-shell {
+      max-width: 1180px;
       margin: 0 auto;
-      padding: 24px 16px 40px;
+      padding: 28px 16px 44px;
+      position: relative;
+      z-index: 1;
     }
-    .hero, .card {
-      background: var(--card);
+
+    .card {
+      background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      animation: rise 0.45s ease both;
     }
+
     .hero {
-      padding: 24px;
-      margin-bottom: 18px;
+      padding: 28px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      position: relative;
     }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -120px -120px auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(181, 122, 34, 0.2), transparent 72%);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
     .title {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-    .sub {
-      color: var(--muted);
       margin: 0;
-      line-height: 1.7;
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
     }
+
+    .sub {
+      max-width: 720px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.9;
+      font-size: 15px;
+    }
+
     .meta {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
-      margin-top: 18px;
+      margin-top: 22px;
     }
+
     .meta-item {
-      background: var(--accent-soft);
-      border-radius: 14px;
-      padding: 12px 14px;
+      background: var(--paper-strong);
+      border: 1px solid rgba(24, 58, 99, 0.08);
+      border-radius: 18px;
+      padding: 14px 16px;
     }
+
     .meta-item strong {
       display: block;
-      font-size: 12px;
-      color: var(--muted);
       margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
+
     .meta-item span {
+      display: block;
       font-size: 20px;
       font-weight: 700;
+      line-height: 1.3;
+      word-break: break-word;
     }
+
     .links {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 20px;
     }
-    .link-btn {
+
+    .link-btn,
+    .text-link {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
       text-decoration: none;
-      color: var(--accent);
-      background: #fff;
-      border: 1px solid var(--line);
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .link-btn {
+      min-height: 42px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: var(--paper-strong);
+      border: 1px solid rgba(24, 58, 99, 0.12);
       font-weight: 700;
     }
-    .grid {
+
+    .link-btn:hover,
+    .text-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .story-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.95fr);
+      gap: 18px;
+      align-items: start;
     }
-    .section {
-      margin-top: 18px;
+
+    .feature {
+      padding: 24px;
+      min-width: 0;
     }
-    .section h2 {
-      font-size: 18px;
-      margin: 0 0 12px;
+
+    .rail {
+      display: grid;
+      gap: 18px;
     }
-    .card {
+
+    .rail-card,
+    .source-card {
+      padding: 22px;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+    }
+
+    .lead {
+      padding: 22px;
+      border-radius: 20px;
+      background:
+        linear-gradient(135deg, rgba(24, 58, 99, 0.95), rgba(15, 26, 40, 0.96));
+      color: #f7f3ed;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .status-badge,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .status-live {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff7d9;
+      border: 1px solid rgba(255, 247, 217, 0.24);
+    }
+
+    .status-calm {
+      background: rgba(255, 255, 255, 0.16);
+      color: #cfe3ff;
+      border: 1px solid rgba(207, 227, 255, 0.24);
+    }
+
+    .stamp {
+      font-size: 13px;
+      color: rgba(247, 243, 237, 0.82);
+    }
+
+    .lead-title {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.25;
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+    }
+
+    .lead-text {
+      margin: 14px 0 0;
+      line-height: 1.85;
+      color: rgba(247, 243, 237, 0.9);
+      font-size: 15px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .feature-block {
       padding: 18px;
+      border-radius: 18px;
+      background: var(--paper-strong);
+      border: 1px solid rgba(24, 58, 99, 0.08);
+      min-width: 0;
     }
-    .item {
-      padding: 14px 0;
+
+    .block-title,
+    .group-title {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .rail-group + .rail-group {
+      margin-top: 20px;
+      padding-top: 20px;
       border-top: 1px solid var(--line);
     }
-    .item:first-child { border-top: 0; padding-top: 0; }
-    .item:last-child { padding-bottom: 0; }
-    .item h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
+
+    .list-item + .list-item {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(24, 33, 43, 0.08);
+    }
+
+    .list-item h3,
+    .source-item h3 {
+      margin: 8px 0 0;
+      font-size: 17px;
       line-height: 1.5;
     }
-    .kicker {
-      display: inline-block;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 700;
-      margin-bottom: 8px;
+
+    .small {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
     }
-    .muted { color: var(--muted); }
-    .small { font-size: 13px; line-height: 1.7; }
-    .empty {
-      padding: 14px;
-      border-radius: 14px;
-      background: var(--warn-soft);
-      color: var(--text);
+
+    .micro {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
       line-height: 1.7;
     }
-    ul {
-      margin: 8px 0 0 18px;
-      padding: 0;
+
+    .tag-cool {
+      color: var(--navy);
+      background: var(--navy-soft);
     }
-    li { margin: 6px 0; }
+
+    .tag-warm {
+      color: #8c5a11;
+      background: var(--gold-soft);
+    }
+
+    .tag-ink {
+      color: var(--ink);
+      background: rgba(24, 33, 43, 0.08);
+    }
+
+    .bullet-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink);
+    }
+
+    .bullet-list li {
+      margin: 8px 0;
+      line-height: 1.7;
+    }
+
+    .empty {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(181, 122, 34, 0.08);
+      color: var(--ink);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .source-item + .source-item {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(24, 33, 43, 0.08);
+    }
+
+    .source-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .text-link {
+      margin-top: 10px;
+      color: var(--navy);
+      font-weight: 700;
+      justify-content: flex-start;
+    }
+
     .loading {
+      padding: 22px 0;
       color: var(--muted);
-      padding: 18px 0;
     }
-    .source-role {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 4px;
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .story-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-shell {
+        padding: 18px 12px 28px;
+      }
+
+      .hero,
+      .feature,
+      .rail-card,
+      .source-card {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
+  <div class="page-shell">
+    <header class="hero card">
+      <p class="eyebrow">GitHub Pages Daily Desk</p>
       <h1 class="title">株クラAI分析レポート</h1>
-      <p class="sub">固定URLで最新レポートを確認できます。bot 実行ごとに `latest-analysis-full.json` と `latest-analysis-full.md` が上書きされ、トップはその最新内容を表示します。</p>
+      <p class="sub">
+        固定URLで最新レポートを追える、デイリーのマーケットノートです。
+        bot 実行ごとに <code>latest-analysis-full.json</code> と <code>latest-analysis-full.md</code> が更新され、
+        このトップにはその最新内容だけを表示します。
+      </p>
       <div id="hero-meta" class="meta"></div>
       <div class="links">
         <a class="link-btn" href="./latest-analysis-full.md">詳細Markdown</a>
         <a class="link-btn" href="./latest-analysis-full.json">詳細JSON</a>
       </div>
-    </section>
+    </header>
 
-    <div class="grid">
-      <section class="section">
-        <h2>最新分析</h2>
-        <div class="card" id="latest-analysis"><div class="loading">読み込み中...</div></div>
-      </section>
-      <section class="section">
-        <h2>主要テーマ</h2>
-        <div class="card" id="themes"><div class="loading">読み込み中...</div></div>
-      </section>
-      <section class="section">
-        <h2>本命 / 監視候補</h2>
-        <div class="card" id="picks"><div class="loading">読み込み中...</div></div>
-      </section>
-      <section class="section">
-        <h2>詳細リンク</h2>
-        <div class="card" id="sources"><div class="loading">読み込み中...</div></div>
-      </section>
-    </div>
+    <main class="story-layout">
+      <article class="feature card">
+        <div class="section-head">
+          <p class="eyebrow">Featured Note</p>
+          <h2>今日の見立て</h2>
+        </div>
+        <div id="latest-analysis"><div class="loading">読み込み中...</div></div>
+      </article>
+
+      <aside class="rail">
+        <section class="rail-card card">
+          <div class="section-head">
+            <p class="eyebrow">Theme Journal</p>
+            <h2>テーマメモ</h2>
+          </div>
+          <div id="themes"><div class="loading">読み込み中...</div></div>
+        </section>
+
+        <section class="rail-card card">
+          <div class="section-head">
+            <p class="eyebrow">Idea Board</p>
+            <h2>銘柄ボード</h2>
+          </div>
+          <div id="picks"><div class="loading">読み込み中...</div></div>
+        </section>
+      </aside>
+    </main>
+
+    <section class="source-card card" style="margin-top: 18px;">
+      <div class="section-head">
+        <p class="eyebrow">Source Memo</p>
+        <h2>ソースメモ</h2>
+      </div>
+      <div id="sources"><div class="loading">読み込み中...</div></div>
+    </section>
   </div>
 
   <script>
-    const fmt = (value) => value == null || value === "" ? "なし" : String(value);
-    const clip = (text, max = 88) => {
-      const s = fmt(text);
-      return s.length > max ? `${s.slice(0, max - 1)}…` : s;
+    const fmt = (value, fallback = "なし") => value == null || value === "" ? fallback : String(value);
+    const clip = (text, max = 100) => {
+      const value = fmt(text, "");
+      return value.length > max ? `${value.slice(0, max - 1)}…` : value;
     };
     const html = (text) => fmt(text)
       .replaceAll("&", "&amp;")
@@ -195,69 +485,74 @@
       if (!items || items.length === 0) {
         return `<div class="empty">${html(emptyText)}</div>`;
       }
-      return items.map((item) => `<div class="item">${renderer(item)}</div>`).join("");
+      return items.map((item) => `<div class="list-item">${renderer(item)}</div>`).join("");
     }
 
-    function renderTheme(theme) {
-      const why = theme.why_it_matters ? `<div class="small">${html(clip(theme.why_it_matters, 120))}</div>` : "";
-      const news = (theme.news_items || []).slice(0, 1).map((newsItem) => `
-        <div class="small muted">根拠: ${html(clip(newsItem.headline, 96))}</div>
-      `).join("");
+    function renderBulletList(items, emptyText) {
+      if (!items || items.length === 0) {
+        return `<div class="empty">${html(emptyText)}</div>`;
+      }
+      return `<ul class="bullet-list">${items.map((item) => `<li>${html(item)}</li>`).join("")}</ul>`;
+    }
+
+    function renderTheme(theme, tone) {
+      const badge = tone === "backdrop" ? "背景相場" : "投資テーマ";
+      const badgeClass = tone === "backdrop" ? "tag-warm" : "tag-cool";
+      const firstNews = (theme.news_items || [])[0];
       return `
-        <div class="kicker">言及 ${html(theme.mention_count)}</div>
+        <span class="tag ${badgeClass}">${html(badge)}</span>
         <h3>${html(theme.theme)}</h3>
-        ${why}
-        ${news}
+        ${theme.why_it_matters ? `<p class="small">${html(clip(theme.why_it_matters, 120))}</p>` : ""}
+        ${firstNews ? `<div class="micro">根拠: ${html(clip(firstNews.headline, 96))}</div>` : ""}
       `;
     }
 
     function renderPick(pick, label) {
+      const badgeClass = label === "Watch" ? "tag-warm" : "tag-cool";
       return `
-        <div class="kicker">${html(label)}</div>
+        <span class="tag ${badgeClass}">${html(label)}</span>
         <h3>${html(`${pick.name} (${pick.code})`)}</h3>
-        ${pick.root_theme ? `<div class="small">テーマ: ${html(pick.root_theme)}</div>` : ""}
-        ${pick.reasoning ? `<div class="small muted">${html(clip(pick.reasoning, 120))}</div>` : ""}
+        ${pick.root_theme ? `<p class="small">テーマ: ${html(pick.root_theme)}</p>` : ""}
+        ${pick.reasoning ? `<p class="small">${html(clip(pick.reasoning, 120))}</p>` : ""}
       `;
     }
 
-    function renderWatchBlock(data) {
-      const associative = data.associative_picks || [];
-      const watch = data.watch_candidates || [];
-      const sectorWatch = data.sector_watch || [];
-      const processWatch = data.process_watch || [];
+    function renderSectorWatch(item) {
+      return `
+        <span class="tag tag-warm">Sector</span>
+        <h3>${html(item.sector)}</h3>
+        <p class="small">${html(clip(item.why, 110))}</p>
+        <div class="micro">昇格条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
+      `;
+    }
 
-      const sections = [];
-      if (associative.length > 0) {
-        sections.push(`<h3>本命候補</h3>${renderList(associative.slice(0, 2), (item) => renderPick(item, "Associative"), "本命候補はありません。")}`);
-      } else {
-        sections.push(`<h3>本命候補</h3><div class="empty">本命候補は見送りです。</div>`);
-      }
+    function renderProcessWatch(item) {
+      return `
+        <span class="tag tag-cool">Process</span>
+        <h3>${html(item.process)}</h3>
+        <p class="small">${html(clip(item.focus, 110))}</p>
+        <div class="micro">確認条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
+      `;
+    }
 
-      if (watch.length > 0) {
-        sections.push(`<h3>監視候補</h3>${renderList(watch.slice(0, 3), (item) => renderPick(item, "Watch"), "監視候補はありません。")}`);
-      } else {
-        sections.push(`<h3>監視候補</h3><div class="empty">監視候補はありません。</div>`);
-      }
-
-      if (sectorWatch.length > 0) {
-        sections.push(`<h3>Sector Watch</h3>${renderList(sectorWatch.slice(0, 3), (item) => `
-          <div class="kicker">Sector</div>
-          <h3>${html(item.sector)}</h3>
-          <div class="small">注視テーマ: ${html(item.theme)}</div>
-          <div class="small muted">昇格条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
-        `, "業種監視はありません。")}`);
-      }
-
-      if (processWatch.length > 0) {
-        sections.push(`<h3>Process Watch</h3>${renderList(processWatch.slice(0, 3), (item) => `
-          <div class="kicker">Process</div>
-          <h3>${html(item.process)}</h3>
-          <div class="small">波及確認: ${html(item.focus)}</div>
-          <div class="small muted">昇格条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
-        `, "工程監視はありません。")}`);
-      }
-
-      return sections.join("");
+    function renderSource(item) {
+      const roleLabels = {
+        backdrop: "背景相場",
+        investable: "投資テーマ",
+        sector_watch: "注視業種",
+        process_watch: "注視工程",
+      };
+      const roleLabel = roleLabels[item.role] || "source";
+      return `
+        <div class="source-item">
+          <div class="source-head">
+            <span class="tag tag-ink">${html(roleLabel)}</span>
+            <span class="micro">${html([item.source, item.timestamp].filter(Boolean).join(" / "))}</span>
+          </div>
+          <h3>${html(clip(item.headline, 110))}</h3>
+          ${item.url ? `<a class="text-link" href="${html(item.url)}" target="_blank" rel="noopener noreferrer">リンクを見る</a>` : ""}
+        </div>
+      `;
     }
 
     fetch("./latest-analysis-full.json", { cache: "no-store" })
@@ -268,16 +563,21 @@
       .then((data) => {
         const backdrop = data.market_backdrop || [];
         const investable = data.investable_themes || [];
-        const associative = data.associative_picks || [];
+        const direct = data.direct_picks || [];
+        const associative = data.associative_picks || data.stock_picks || [];
         const watch = data.watch_candidates || [];
+        const nextChecks = data.next_checks || [];
+        const sectorWatch = data.sector_watch || [];
+        const processWatch = data.process_watch || [];
         const sources = data.source_list || [];
+        const hasIdeas = investable.length > 0 || direct.length > 0 || associative.length > 0 || watch.length > 0;
 
         document.getElementById("hero-meta").innerHTML = [
           ["分析日時", data.analysis_date],
-          ["Backdrop", backdrop.length],
-          ["Investable", investable.length],
-          ["本命", associative.length],
-          ["監視", watch.length]
+          ["背景", backdrop.length],
+          ["投資", investable.length],
+          ["本命", direct.length + associative.length],
+          ["監視", watch.length],
         ].map(([label, value]) => `
           <div class="meta-item">
             <strong>${html(label)}</strong>
@@ -286,38 +586,68 @@
         `).join("");
 
         document.getElementById("latest-analysis").innerHTML = `
-          <div class="item">
-            <div class="kicker">最新分析</div>
-            <h3>${investable.length > 0 ? "投資テーマあり" : "背景相場中心"}</h3>
-            <div class="small">${html(data.market_sentiment || "センチメント情報なし")}</div>
-          </div>
-          ${data.next_checks && data.next_checks.length > 0 ? `
-            <div class="item">
-              <div class="kicker">次に確認</div>
-              <ul>${data.next_checks.slice(0, 3).map((item) => `<li>${html(item)}</li>`).join("")}</ul>
+          <section class="lead">
+            <div class="status-row">
+              <span class="status-badge ${hasIdeas ? "status-live" : "status-calm"}">${html(hasIdeas ? "投資テーマあり" : "背景相場中心")}</span>
+              <span class="stamp">${html(data.analysis_date || "日時不明")}</span>
             </div>
-          ` : ""}
+            <h3 class="lead-title">${html(hasIdeas ? "材料と資金の流れを追う日" : "個別より地合いを先に確認する日")}</h3>
+            <p class="lead-text">${html(data.market_sentiment || "センチメント情報はありません。")}</p>
+          </section>
+          <div class="feature-grid">
+            <section class="feature-block">
+              <div class="block-title">次に確認</div>
+              ${renderBulletList(nextChecks.slice(0, 4), "次の確認ポイントはありません。")}
+            </section>
+            <section class="feature-block">
+              <div class="block-title">注視業種</div>
+              ${renderList(sectorWatch.slice(0, 3), renderSectorWatch, "注視業種はありません。")}
+            </section>
+            <section class="feature-block">
+              <div class="block-title">注視工程</div>
+              ${renderList(processWatch.slice(0, 3), renderProcessWatch, "注視工程はありません。")}
+            </section>
+          </div>
         `;
 
         document.getElementById("themes").innerHTML = [
-          investable.length > 0
-            ? `<h3>投資テーマ</h3>${renderList(investable.slice(0, 4), renderTheme, "投資テーマはありません。")}`
-            : `<h3>投資テーマ</h3><div class="empty">今日は背景相場中心で、投資テーマは見送りです。</div>`,
-          backdrop.length > 0
-            ? `<h3>Market Backdrop</h3>${renderList(backdrop.slice(0, 2), renderTheme, "背景テーマはありません。")}`
-            : ""
+          `<div class="rail-group">
+            <div class="group-title">Investable Themes</div>
+            ${renderList(investable.slice(0, 4), (item) => renderTheme(item, "investable"), "今日は背景相場中心で、投資テーマは見送りです。")}
+          </div>`,
+          `<div class="rail-group">
+            <div class="group-title">Background</div>
+            ${renderList(backdrop.slice(0, 2), (item) => renderTheme(item, "backdrop"), "背景相場のメモはありません。")}
+          </div>`,
         ].join("");
 
-        document.getElementById("picks").innerHTML = renderWatchBlock(data);
+        const picksSections = [];
+        if (direct.length === 0 && associative.length === 0 && watch.length === 0) {
+          picksSections.push(`<div class="empty">本日は個別銘柄より、背景相場と注視ボードの優先度が高い日です。</div>`);
+        }
+        picksSections.push(`
+          <div class="rail-group">
+            <div class="group-title">Direct Picks</div>
+            ${renderList(direct.slice(0, 2), (item) => renderPick(item, "Direct"), "直接材料の本命はありません。")}
+          </div>
+        `);
+        picksSections.push(`
+          <div class="rail-group">
+            <div class="group-title">Associative Picks</div>
+            ${renderList(associative.slice(0, 2), (item) => renderPick(item, "Associative"), "連想の本命候補はありません。")}
+          </div>
+        `);
+        picksSections.push(`
+          <div class="rail-group">
+            <div class="group-title">Watch Candidates</div>
+            ${renderList(watch.slice(0, 3), (item) => renderPick(item, "Watch"), "監視候補はありません。")}
+          </div>
+        `);
+        document.getElementById("picks").innerHTML = picksSections.join("");
 
-        document.getElementById("sources").innerHTML = `
-          ${renderList(sources.slice(0, 8), (item) => `
-            <div class="source-role">${html(item.role || "source")}</div>
-            <h3>${html(clip(item.headline, 100))}</h3>
-            <div class="small muted">${html([item.source, item.timestamp].filter(Boolean).join(" / "))}</div>
-            ${item.url ? `<div class="small"><a href="${html(item.url)}" target="_blank" rel="noopener noreferrer">記事リンク</a></div>` : ""}
-          `, "今回の表示に使ったソースはまだありません。")}
-        `;
+        document.getElementById("sources").innerHTML = sources.length > 0
+          ? sources.slice(0, 10).map(renderSource).join("")
+          : `<div class="empty">表示できるソースはありません。</div>`;
       })
       .catch((error) => {
         const message = `最新レポートを読み込めませんでした: ${error.message}`;
