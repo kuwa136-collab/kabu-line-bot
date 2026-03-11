@@ -1,0 +1,33 @@
+{
+  "name": "kabu-line-bot",
+  "version": "1.0.0",
+  "description": "株式情報スクレイピング → AI分析 → LINE配信ボット",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon",
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "analyze": "ts-node src/scheduler/cronJob.ts --analyze",
+    "fetch-only": "ts-node src/scheduler/cronJob.ts --fetch-only",
+    "send-test": "ts-node src/scheduler/cronJob.ts --send-test",
+    "show-logs": "ts-node src/scheduler/cronJob.ts --show-logs"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "^9.4.0",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "node-cron": "^3.0.3",
+    "puppeteer": "^24.37.5",
+    "rss-parser": "^3.13.0"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^22.10.10",
+    "@types/node-cron": "^3.0.11",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

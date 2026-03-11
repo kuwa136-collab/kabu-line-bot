@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>株クラAI分析レポート</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #5b6472;
+      --line: #d7dfeb;
+      --accent: #1d4ed8;
+      --accent-soft: #e8f0ff;
+      --warn-soft: #fff4df;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+    .hero, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+    .hero {
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    .title {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.7;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .meta-item {
+      background: var(--accent-soft);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .meta-item strong {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .meta-item span {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--accent);
+      background: #fff;
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .section {
+      margin-top: 18px;
+    }
+    .section h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+    }
+    .card {
+      padding: 18px;
+    }
+    .item {
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+    .item:first-child { border-top: 0; padding-top: 0; }
+    .item:last-child { padding-bottom: 0; }
+    .item h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .kicker {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; line-height: 1.7; }
+    .empty {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--warn-soft);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+    li { margin: 6px 0; }
+    .loading {
+      color: var(--muted);
+      padding: 18px 0;
+    }
+    .source-role {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1 class="title">株クラAI分析レポート</h1>
+      <p class="sub">固定URLで最新レポートを確認できます。bot 実行ごとに `latest-analysis-full.json` と `latest-analysis-full.md` が上書きされ、トップはその最新内容を表示します。</p>
+      <div id="hero-meta" class="meta"></div>
+      <div class="links">
+        <a class="link-btn" href="./latest-analysis-full.md">詳細Markdown</a>
+        <a class="link-btn" href="./latest-analysis-full.json">詳細JSON</a>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="section">
+        <h2>最新分析</h2>
+        <div class="card" id="latest-analysis"><div class="loading">読み込み中...</div></div>
+      </section>
+      <section class="section">
+        <h2>主要テーマ</h2>
+        <div class="card" id="themes"><div class="loading">読み込み中...</div></div>
+      </section>
+      <section class="section">
+        <h2>本命 / 監視候補</h2>
+        <div class="card" id="picks"><div class="loading">読み込み中...</div></div>
+      </section>
+      <section class="section">
+        <h2>詳細リンク</h2>
+        <div class="card" id="sources"><div class="loading">読み込み中...</div></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const fmt = (value) => value == null || value === "" ? "なし" : String(value);
+    const clip = (text, max = 88) => {
+      const s = fmt(text);
+      return s.length > max ? `${s.slice(0, max - 1)}…` : s;
+    };
+    const html = (text) => fmt(text)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("\"", "&quot;");
+
+    function renderList(items, renderer, emptyText) {
+      if (!items || items.length === 0) {
+        return `<div class="empty">${html(emptyText)}</div>`;
+      }
+      return items.map((item) => `<div class="item">${renderer(item)}</div>`).join("");
+    }
+
+    function renderTheme(theme) {
+      const why = theme.why_it_matters ? `<div class="small">${html(clip(theme.why_it_matters, 120))}</div>` : "";
+      const news = (theme.news_items || []).slice(0, 1).map((newsItem) => `
+        <div class="small muted">根拠: ${html(clip(newsItem.headline, 96))}</div>
+      `).join("");
+      return `
+        <div class="kicker">言及 ${html(theme.mention_count)}</div>
+        <h3>${html(theme.theme)}</h3>
+        ${why}
+        ${news}
+      `;
+    }
+
+    function renderPick(pick, label) {
+      return `
+        <div class="kicker">${html(label)}</div>
+        <h3>${html(`${pick.name} (${pick.code})`)}</h3>
+        ${pick.root_theme ? `<div class="small">テーマ: ${html(pick.root_theme)}</div>` : ""}
+        ${pick.reasoning ? `<div class="small muted">${html(clip(pick.reasoning, 120))}</div>` : ""}
+      `;
+    }
+
+    function renderWatchBlock(data) {
+      const associative = data.associative_picks || [];
+      const watch = data.watch_candidates || [];
+      const sectorWatch = data.sector_watch || [];
+      const processWatch = data.process_watch || [];
+
+      const sections = [];
+      if (associative.length > 0) {
+        sections.push(`<h3>本命候補</h3>${renderList(associative.slice(0, 2), (item) => renderPick(item, "Associative"), "本命候補はありません。")}`);
+      } else {
+        sections.push(`<h3>本命候補</h3><div class="empty">本命候補は見送りです。</div>`);
+      }
+
+      if (watch.length > 0) {
+        sections.push(`<h3>監視候補</h3>${renderList(watch.slice(0, 3), (item) => renderPick(item, "Watch"), "監視候補はありません。")}`);
+      } else {
+        sections.push(`<h3>監視候補</h3><div class="empty">監視候補はありません。</div>`);
+      }
+
+      if (sectorWatch.length > 0) {
+        sections.push(`<h3>Sector Watch</h3>${renderList(sectorWatch.slice(0, 3), (item) => `
+          <div class="kicker">Sector</div>
+          <h3>${html(item.sector)}</h3>
+          <div class="small">注視テーマ: ${html(item.theme)}</div>
+          <div class="small muted">昇格条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
+        `, "業種監視はありません。")}`);
+      }
+
+      if (processWatch.length > 0) {
+        sections.push(`<h3>Process Watch</h3>${renderList(processWatch.slice(0, 3), (item) => `
+          <div class="kicker">Process</div>
+          <h3>${html(item.process)}</h3>
+          <div class="small">波及確認: ${html(item.focus)}</div>
+          <div class="small muted">昇格条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
+        `, "工程監視はありません。")}`);
+      }
+
+      return sections.join("");
+    }
+
+    fetch("./latest-analysis-full.json", { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        const backdrop = data.market_backdrop || [];
+        const investable = data.investable_themes || [];
+        const associative = data.associative_picks || [];
+        const watch = data.watch_candidates || [];
+        const sources = data.source_list || [];
+
+        document.getElementById("hero-meta").innerHTML = [
+          ["分析日時", data.analysis_date],
+          ["Backdrop", backdrop.length],
+          ["Investable", investable.length],
+          ["本命", associative.length],
+          ["監視", watch.length]
+        ].map(([label, value]) => `
+          <div class="meta-item">
+            <strong>${html(label)}</strong>
+            <span>${html(value)}</span>
+          </div>
+        `).join("");
+
+        document.getElementById("latest-analysis").innerHTML = `
+          <div class="item">
+            <div class="kicker">最新分析</div>
+            <h3>${investable.length > 0 ? "投資テーマあり" : "背景相場中心"}</h3>
+            <div class="small">${html(data.market_sentiment || "センチメント情報なし")}</div>
+          </div>
+          ${data.next_checks && data.next_checks.length > 0 ? `
+            <div class="item">
+              <div class="kicker">次に確認</div>
+              <ul>${data.next_checks.slice(0, 3).map((item) => `<li>${html(item)}</li>`).join("")}</ul>
+            </div>
+          ` : ""}
+        `;
+
+        document.getElementById("themes").innerHTML = [
+          investable.length > 0
+            ? `<h3>投資テーマ</h3>${renderList(investable.slice(0, 4), renderTheme, "投資テーマはありません。")}`
+            : `<h3>投資テーマ</h3><div class="empty">今日は背景相場中心で、投資テーマは見送りです。</div>`,
+          backdrop.length > 0
+            ? `<h3>Market Backdrop</h3>${renderList(backdrop.slice(0, 2), renderTheme, "背景テーマはありません。")}`
+            : ""
+        ].join("");
+
+        document.getElementById("picks").innerHTML = renderWatchBlock(data);
+
+        document.getElementById("sources").innerHTML = `
+          ${renderList(sources.slice(0, 8), (item) => `
+            <div class="source-role">${html(item.role || "source")}</div>
+            <h3>${html(clip(item.headline, 100))}</h3>
+            <div class="small muted">${html([item.source, item.timestamp].filter(Boolean).join(" / "))}</div>
+            ${item.url ? `<div class="small"><a href="${html(item.url)}" target="_blank" rel="noopener noreferrer">記事リンク</a></div>` : ""}
+          `, "今回の表示に使ったソースはまだありません。")}
+        `;
+      })
+      .catch((error) => {
+        const message = `最新レポートを読み込めませんでした: ${error.message}`;
+        for (const id of ["hero-meta", "latest-analysis", "themes", "picks", "sources"]) {
+          document.getElementById(id).innerHTML = `<div class="empty">${html(message)}</div>`;
+        }
+      });
+  </script>
+</body>
+</html>

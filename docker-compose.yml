@@ -1,0 +1,51 @@
+services:
+
+  # ─── RSS Bridge ────────────────────────────────────────────
+  rss-bridge:
+    image: rssbridge/rss-bridge:latest
+    container_name: kabu-rss-bridge
+    networks:
+      - kabu-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ─── アプリ本体 ────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: kabu-line-bot
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      # コンテナ内では rss-bridge サービス名でアクセス
+      - RSS_BRIDGE_URL=http://rss-bridge:80
+    ports:
+      - "8080:8080"
+    volumes:
+      # ログ・キャッシュはホスト側に永続化
+      - ./logs:/app/logs
+      - ./tmp:/app/tmp
+    depends_on:
+      rss-bridge:
+        condition: service_healthy
+    networks:
+      - kabu-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  kabu-net:
+    driver: bridge
