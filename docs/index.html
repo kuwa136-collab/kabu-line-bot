@@ -3,20 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>株クラAI分析レポート</title>
+  <title>株クラAIデイリーデスク</title>
   <style>
     :root {
-      --bg: #f3efe7;
-      --paper: rgba(255, 252, 247, 0.92);
-      --paper-strong: #fffdf8;
+      --bg: #f6f1e7;
+      --paper: rgba(255, 252, 247, 0.94);
+      --paper-strong: #fffdfa;
       --ink: #18212b;
-      --muted: #5f6a73;
-      --line: rgba(24, 33, 43, 0.12);
-      --navy: #183a63;
-      --navy-soft: rgba(24, 58, 99, 0.08);
-      --gold: #b57a22;
-      --gold-soft: rgba(181, 122, 34, 0.12);
-      --shadow: 0 18px 48px rgba(49, 45, 36, 0.12);
+      --muted: #5d6770;
+      --line: rgba(24, 33, 43, 0.1);
+      --navy: #173b62;
+      --navy-soft: rgba(23, 59, 98, 0.08);
+      --gold: #9d6b1f;
+      --gold-soft: rgba(157, 107, 31, 0.1);
+      --alert: #7d4a26;
+      --shadow: 0 18px 44px rgba(47, 42, 34, 0.12);
     }
 
     * { box-sizing: border-box; }
@@ -26,9 +27,9 @@
       color: var(--ink);
       font-family: "BIZ UDPGothic", "Yu Gothic", sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(181, 122, 34, 0.12), transparent 30%),
-        radial-gradient(circle at top right, rgba(24, 58, 99, 0.14), transparent 28%),
-        linear-gradient(180deg, #faf6ef 0%, var(--bg) 100%);
+        radial-gradient(circle at top left, rgba(157, 107, 31, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(23, 59, 98, 0.12), transparent 32%),
+        linear-gradient(180deg, #fbf7f0 0%, var(--bg) 100%);
     }
 
     body::before {
@@ -40,15 +41,15 @@
         linear-gradient(rgba(24, 33, 43, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(24, 33, 43, 0.02) 1px, transparent 1px);
       background-size: 28px 28px;
-      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 80%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.32), transparent 78%);
     }
 
-    .page-shell {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 28px 16px 44px;
+    .page {
       position: relative;
       z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 16px 52px;
     }
 
     .card {
@@ -57,153 +58,106 @@
       border-radius: 24px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
-      animation: rise 0.45s ease both;
     }
 
-    .hero {
-      padding: 28px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      position: relative;
+    .hero,
+    .summary,
+    .panel {
+      padding: 24px;
+      margin-bottom: 18px;
     }
 
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -120px -120px auto;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(181, 122, 34, 0.2), transparent 72%);
-    }
-
-    .eyebrow {
+    .kicker {
       margin: 0 0 10px;
       color: var(--gold);
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
-    .title {
+    h1, h2, h3 {
       margin: 0;
       font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-      font-size: clamp(34px, 5vw, 52px);
-      line-height: 1.1;
-      letter-spacing: 0.02em;
-    }
-
-    .sub {
-      max-width: 720px;
-      margin: 14px 0 0;
-      color: var(--muted);
-      line-height: 1.9;
-      font-size: 15px;
-    }
-
-    .meta {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .meta-item {
-      background: var(--paper-strong);
-      border: 1px solid rgba(24, 58, 99, 0.08);
-      border-radius: 18px;
-      padding: 14px 16px;
-    }
-
-    .meta-item strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .meta-item span {
-      display: block;
-      font-size: 20px;
-      font-weight: 700;
       line-height: 1.3;
-      word-break: break-word;
     }
 
-    .links {
+    h1 {
+      font-size: clamp(34px, 5vw, 50px);
+      line-height: 1.08;
+    }
+
+    .hero-text,
+    .section-sub,
+    .body {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.85;
+    }
+
+    .hero-text {
+      max-width: 760px;
+      margin: 14px 0 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .hero-actions,
+    .chips,
+    .footer-links {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 16px;
     }
 
-    .link-btn,
-    .text-link {
+    .hero-link,
+    .source-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-    }
-
-    .link-btn {
       min-height: 42px;
       padding: 10px 16px;
       border-radius: 999px;
-      color: var(--navy);
+      border: 1px solid rgba(23, 59, 98, 0.14);
       background: var(--paper-strong);
-      border: 1px solid rgba(24, 58, 99, 0.12);
+      color: var(--navy);
+      text-decoration: none;
       font-weight: 700;
+      transition: transform 0.18s ease;
     }
 
-    .link-btn:hover,
-    .text-link:hover {
+    .hero-link:hover,
+    .source-link:hover {
       transform: translateY(-1px);
     }
 
-    .story-layout {
+    .summary-grid,
+    .dashboard,
+    .grid-2 {
       display: grid;
+      gap: 16px;
+    }
+
+    .summary-grid {
+      grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.95fr);
+    }
+
+    .dashboard {
       grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.95fr);
-      gap: 18px;
       align-items: start;
     }
 
-    .feature {
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .summary-main {
       padding: 24px;
-      min-width: 0;
-    }
-
-    .rail {
-      display: grid;
-      gap: 18px;
-    }
-
-    .rail-card,
-    .source-card {
-      padding: 22px;
-    }
-
-    .section-head {
-      margin-bottom: 14px;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.3;
-      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-    }
-
-    .lead {
-      padding: 22px;
-      border-radius: 20px;
-      background:
-        linear-gradient(135deg, rgba(24, 58, 99, 0.95), rgba(15, 26, 40, 0.96));
-      color: #f7f3ed;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(23, 59, 98, 0.98), rgba(15, 26, 40, 0.97));
+      color: #f6f2ea;
     }
 
     .status-row {
@@ -214,146 +168,164 @@
       margin-bottom: 14px;
     }
 
-    .status-badge,
-    .tag {
+    .status,
+    .label,
+    .chip {
       display: inline-flex;
       align-items: center;
       min-height: 28px;
       padding: 4px 10px;
       border-radius: 999px;
       font-size: 12px;
+    }
+
+    .status {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff4d3;
+      border: 1px solid rgba(255, 244, 211, 0.2);
+    }
+
+    .status.soft {
+      color: #cfe4ff;
+      border-color: rgba(207, 228, 255, 0.22);
+    }
+
+    .summary-stamp {
+      color: rgba(246, 242, 234, 0.78);
+      font-size: 13px;
+    }
+
+    .summary-title {
+      font-size: clamp(26px, 3vw, 38px);
+    }
+
+    .summary-text {
+      margin: 14px 0 0;
+      color: rgba(246, 242, 234, 0.92);
+      line-height: 1.9;
+      font-size: 15px;
+    }
+
+    .summary-points,
+    .summary-side,
+    .stack,
+    .list,
+    .kv {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-point,
+    .metric,
+    .mini-card,
+    .tone-card {
+      padding: 18px;
+      border-radius: 20px;
+      min-width: 0;
+    }
+
+    .summary-point {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .metric,
+    .mini-card {
+      background: var(--paper-strong);
+      border: 1px solid rgba(23, 59, 98, 0.08);
+    }
+
+    .tone-card {
+      background: linear-gradient(180deg, rgba(157, 107, 31, 0.08), rgba(157, 107, 31, 0.02));
+      border: 1px solid rgba(157, 107, 31, 0.12);
+    }
+
+    .summary-point strong,
+    .metric strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .metric span {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .section-title {
+      margin-bottom: 14px;
+    }
+
+    .section-title p {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .section-title h2 {
+      font-size: 24px;
+    }
+
+    .label {
+      margin-bottom: 10px;
       font-weight: 700;
       letter-spacing: 0.03em;
     }
 
-    .status-live {
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff7d9;
-      border: 1px solid rgba(255, 247, 217, 0.24);
-    }
-
-    .status-calm {
-      background: rgba(255, 255, 255, 0.16);
-      color: #cfe3ff;
-      border: 1px solid rgba(207, 227, 255, 0.24);
-    }
-
-    .stamp {
-      font-size: 13px;
-      color: rgba(247, 243, 237, 0.82);
-    }
-
-    .lead-title {
-      margin: 0;
-      font-size: clamp(24px, 3vw, 34px);
-      line-height: 1.25;
-      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-    }
-
-    .lead-text {
-      margin: 14px 0 0;
-      line-height: 1.85;
-      color: rgba(247, 243, 237, 0.9);
-      font-size: 15px;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 16px;
-    }
-
-    .feature-block {
-      padding: 18px;
-      border-radius: 18px;
-      background: var(--paper-strong);
-      border: 1px solid rgba(24, 58, 99, 0.08);
-      min-width: 0;
-    }
-
-    .block-title,
-    .group-title {
-      margin: 0 0 12px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .rail-group + .rail-group {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--line);
-    }
-
-    .list-item + .list-item {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(24, 33, 43, 0.08);
-    }
-
-    .list-item h3,
-    .source-item h3 {
-      margin: 8px 0 0;
-      font-size: 17px;
-      line-height: 1.5;
-    }
-
-    .small {
-      margin: 8px 0 0;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 14px;
-    }
-
-    .micro {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .tag-cool {
+    .label.navy {
       color: var(--navy);
       background: var(--navy-soft);
     }
 
-    .tag-warm {
-      color: #8c5a11;
+    .label.gold {
+      color: var(--alert);
       background: var(--gold-soft);
     }
 
-    .tag-ink {
-      color: var(--ink);
-      background: rgba(24, 33, 43, 0.08);
-    }
-
-    .bullet-list {
-      margin: 0;
-      padding-left: 18px;
+    .chip {
+      background: rgba(24, 33, 43, 0.06);
       color: var(--ink);
     }
 
-    .bullet-list li {
-      margin: 8px 0;
-      line-height: 1.7;
+    .body {
+      margin: 10px 0 0;
     }
 
-    .empty {
-      padding: 16px;
-      border-radius: 16px;
-      background: rgba(181, 122, 34, 0.08);
-      color: var(--ink);
-      line-height: 1.8;
-      font-size: 14px;
-    }
-
-    .source-item + .source-item {
-      margin-top: 14px;
-      padding-top: 14px;
+    .kv-item,
+    .source-item {
+      padding-top: 8px;
       border-top: 1px solid rgba(24, 33, 43, 0.08);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .kv-item strong {
+      color: var(--ink);
+    }
+
+    .list-item {
+      padding: 16px 0 0;
+      border-top: 1px solid rgba(24, 33, 43, 0.08);
+    }
+
+    .list-item:first-child,
+    .source-item:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .list-item h3,
+    .source-item h3 {
+      font-size: 18px;
     }
 
     .source-head {
@@ -363,196 +335,429 @@
       align-items: center;
     }
 
-    .text-link {
-      margin-top: 10px;
-      color: var(--navy);
-      font-weight: 700;
-      justify-content: flex-start;
+    .empty,
+    .loading-box,
+    .error-box {
+      padding: 18px;
+      border-radius: 18px;
+      line-height: 1.8;
     }
 
-    .loading {
-      padding: 22px 0;
+    .empty {
+      background: rgba(23, 59, 98, 0.04);
       color: var(--muted);
     }
 
-    @keyframes rise {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .loading-box,
+    .error-box {
+      border: 1px dashed rgba(24, 33, 43, 0.18);
+      background: rgba(255, 253, 250, 0.88);
+      color: var(--muted);
+    }
+
+    .loading-title,
+    .error-title {
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 18px;
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
     }
 
     @media (max-width: 980px) {
-      .story-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .feature-grid {
+      .summary-grid,
+      .dashboard,
+      .grid-2 {
         grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 640px) {
-      .page-shell {
-        padding: 18px 12px 28px;
+      .page {
+        padding: 18px 12px 34px;
       }
 
       .hero,
-      .feature,
-      .rail-card,
-      .source-card {
+      .summary,
+      .panel {
         padding: 18px;
         border-radius: 20px;
-      }
-
-      .meta {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-shell">
+  <div class="page">
     <header class="hero card">
-      <p class="eyebrow">GitHub Pages Daily Desk</p>
-      <h1 class="title">株クラAI分析レポート</h1>
-      <p class="sub">
-        固定URLで最新レポートを追える、デイリーのマーケットノートです。
-        bot 実行ごとに <code>latest-analysis-full.json</code> と <code>latest-analysis-full.md</code> が更新され、
-        このトップにはその最新内容だけを表示します。
+      <p class="kicker">固定URLで読む朝の投資メモ</p>
+      <h1>株クラAIデイリーデスク</h1>
+      <p class="hero-text">
+        最新レポートを固定URLで上書き公開する前提のトップです。結論、監視枠、根拠を上から順に確認できるようにしています。
+        詳細を追うときは Markdown と JSON をそのまま開けます。
       </p>
-      <div id="hero-meta" class="meta"></div>
-      <div class="links">
-        <a class="link-btn" href="./latest-analysis-full.md">詳細Markdown</a>
-        <a class="link-btn" href="./latest-analysis-full.json">詳細JSON</a>
+      <div class="hero-actions">
+        <a class="hero-link" href="./latest-analysis-full.md">詳細レポートを見る</a>
+        <a class="hero-link" href="./latest-analysis-full.json">JSON を開く</a>
       </div>
     </header>
 
-    <main class="story-layout">
-      <article class="feature card">
-        <div class="section-head">
-          <p class="eyebrow">Featured Note</p>
-          <h2>今日の見立て</h2>
+    <main id="app">
+      <section class="summary card">
+        <div id="summary-loading" class="loading-box">
+          <div class="loading-title">最新の投資メモを読み込み中です</div>
+          <div>反映まで数秒かかる場合があります。うまく表示されないときは、詳細レポートを直接開いて確認できます。</div>
+          <div class="footer-links">
+            <a class="hero-link" href="./latest-analysis-full.md">Markdown を開く</a>
+            <a class="hero-link" href="./latest-analysis-full.json">JSON を開く</a>
+          </div>
         </div>
-        <div id="latest-analysis"><div class="loading">読み込み中...</div></div>
-      </article>
+        <div id="summary" hidden></div>
+      </section>
 
-      <aside class="rail">
-        <section class="rail-card card">
-          <div class="section-head">
-            <p class="eyebrow">Theme Journal</p>
-            <h2>テーマメモ</h2>
+      <div class="dashboard">
+        <section class="panel card">
+          <div class="section-title">
+            <p>監視枠</p>
+            <h2>今日見るべき業種・工程</h2>
+            <p class="section-sub">0件日でも、会社名を無理に出さずに翌日以降の監視軸が分かるようにまとめます。</p>
           </div>
-          <div id="themes"><div class="loading">読み込み中...</div></div>
+          <div id="watch-board"></div>
         </section>
 
-        <section class="rail-card card">
-          <div class="section-head">
-            <p class="eyebrow">Idea Board</p>
-            <h2>銘柄ボード</h2>
-          </div>
-          <div id="picks"><div class="loading">読み込み中...</div></div>
-        </section>
-      </aside>
-    </main>
+        <aside class="stack">
+          <section class="panel card">
+            <div class="section-title">
+              <p>背景相場</p>
+              <h2>まず押さえる前提</h2>
+            </div>
+            <div id="backdrop"></div>
+          </section>
 
-    <section class="source-card card" style="margin-top: 18px;">
-      <div class="section-head">
-        <p class="eyebrow">Source Memo</p>
-        <h2>ソースメモ</h2>
+          <section class="panel card">
+            <div class="section-title">
+              <p>次に確認</p>
+              <h2>昇格条件</h2>
+            </div>
+            <div id="next-checks"></div>
+          </section>
+        </aside>
       </div>
-      <div id="sources"><div class="loading">読み込み中...</div></div>
-    </section>
-  </div>
 
+      <section class="panel card">
+        <div class="section-title">
+          <p>注視テーマ</p>
+          <h2>投資テーマ</h2>
+          <p class="section-sub">背景説明だけで終わらず、日本株の監視軸に落ちるものだけを残します。</p>
+        </div>
+        <div id="themes"></div>
+      </section>
+
+      <section class="panel card">
+        <div class="section-title">
+          <p>根拠ソース</p>
+          <h2>今回の判断に使った記事だけ</h2>
+          <p class="section-sub">表示テーマ、監視枠、結論に実際に使ったソースだけを載せます。</p>
+        </div>
+        <div id="sources"></div>
+      </section>
+    </main>
+  </div>
   <script>
-    const fmt = (value, fallback = "なし") => value == null || value === "" ? fallback : String(value);
-    const clip = (text, max = 100) => {
-      const value = fmt(text, "");
-      return value.length > max ? `${value.slice(0, max - 1)}…` : value;
-    };
-    const html = (text) => fmt(text)
+    const $ = (id) => document.getElementById(id);
+    const safe = (value, fallback = "なし") => value == null || value === "" ? fallback : String(value);
+    const escapeHtml = (value) => safe(value, "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll("\"", "&quot;");
+    const clip = (value, max = 110) => {
+      const text = safe(value, "");
+      return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+    };
+    const dedupe = (items, keyOf) => {
+      const seen = new Set();
+      return (items || []).filter((item) => {
+        const key = keyOf(item);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
 
-    function renderList(items, renderer, emptyText) {
-      if (!items || items.length === 0) {
-        return `<div class="empty">${html(emptyText)}</div>`;
-      }
-      return items.map((item) => `<div class="list-item">${renderer(item)}</div>`).join("");
+    function renderEmpty(message) {
+      return `<div class="empty">${escapeHtml(message)}</div>`;
     }
 
-    function renderBulletList(items, emptyText) {
-      if (!items || items.length === 0) {
-        return `<div class="empty">${html(emptyText)}</div>`;
-      }
-      return `<ul class="bullet-list">${items.map((item) => `<li>${html(item)}</li>`).join("")}</ul>`;
+    function list(items, renderer, emptyMessage) {
+      if (!items || items.length === 0) return renderEmpty(emptyMessage);
+      return `<div class="list">${items.map((item) => `<div class="list-item">${renderer(item)}</div>`).join("")}</div>`;
     }
 
-    function renderTheme(theme, tone) {
-      const badge = tone === "backdrop" ? "背景相場" : "投資テーマ";
-      const badgeClass = tone === "backdrop" ? "tag-warm" : "tag-cool";
-      const firstNews = (theme.news_items || [])[0];
+    function renderTheme(item, badgeText) {
+      const news = (item.news_items || [])[0];
+      const processes = (item.beneficiary_processes || []).slice(0, 3);
       return `
-        <span class="tag ${badgeClass}">${html(badge)}</span>
-        <h3>${html(theme.theme)}</h3>
-        ${theme.why_it_matters ? `<p class="small">${html(clip(theme.why_it_matters, 120))}</p>` : ""}
-        ${firstNews ? `<div class="micro">根拠: ${html(clip(firstNews.headline, 96))}</div>` : ""}
+        <span class="label ${badgeText === "背景相場" ? "gold" : "navy"}">${escapeHtml(badgeText)}</span>
+        <h3>${escapeHtml(item.theme)}</h3>
+        ${item.why_it_matters ? `<p class="body">${escapeHtml(clip(item.why_it_matters, 140))}</p>` : ""}
+        ${processes.length ? `<div class="chips">${processes.map((p) => `<span class="chip">${escapeHtml(p)}</span>`).join("")}</div>` : ""}
+        <div class="kv">
+          ${news ? `<div class="kv-item"><strong>根拠:</strong> ${escapeHtml(clip(news.headline, 120))}</div>` : ""}
+          ${news && news.source ? `<div class="kv-item"><strong>ソース:</strong> ${escapeHtml([news.source, news.timestamp].filter(Boolean).join(" / "))}</div>` : ""}
+        </div>
       `;
     }
 
-    function renderPick(pick, label) {
-      const badgeClass = label === "Watch" ? "tag-warm" : "tag-cool";
+    function renderPick(item, label, tone = "navy") {
       return `
-        <span class="tag ${badgeClass}">${html(label)}</span>
-        <h3>${html(`${pick.name} (${pick.code})`)}</h3>
-        ${pick.root_theme ? `<p class="small">テーマ: ${html(pick.root_theme)}</p>` : ""}
-        ${pick.reasoning ? `<p class="small">${html(clip(pick.reasoning, 120))}</p>` : ""}
+        <span class="label ${tone}">${escapeHtml(label)}</span>
+        <h3>${escapeHtml(`${item.name} (${item.code})`)}</h3>
+        ${item.root_theme ? `<p class="body">テーマ: ${escapeHtml(item.root_theme)}</p>` : ""}
+        ${item.reasoning ? `<p class="body">${escapeHtml(clip(item.reasoning, 140))}</p>` : ""}
+        <div class="kv">
+          ${item.catalyst ? `<div class="kv-item"><strong>本命化条件:</strong> ${escapeHtml(clip(item.catalyst, 120))}</div>` : ""}
+          ${item.risk ? `<div class="kv-item"><strong>留意点:</strong> ${escapeHtml(clip(item.risk, 120))}</div>` : ""}
+        </div>
       `;
     }
 
-    function renderSectorWatch(item) {
+    function renderWatchBlock(item, type) {
+      const title = type === "sector" ? item.sector : item.process;
+      const label = type === "sector" ? "注視業種" : "注視工程";
+      const whyText = type === "sector" ? item.why : item.focus;
+      const triggers = (item.promotion_conditions || []).slice(0, 3);
       return `
-        <span class="tag tag-warm">Sector</span>
-        <h3>${html(item.sector)}</h3>
-        <p class="small">${html(clip(item.why, 110))}</p>
-        <div class="micro">昇格条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
+        <span class="label ${type === "sector" ? "gold" : "navy"}">${label}</span>
+        <h3>${escapeHtml(title)}</h3>
+        <p class="body">${escapeHtml(clip(whyText, 130))}</p>
+        <div class="kv">
+          ${item.theme ? `<div class="kv-item"><strong>起点テーマ:</strong> ${escapeHtml(item.theme)}</div>` : ""}
+          ${triggers.length ? `<div class="kv-item"><strong>昇格条件:</strong> ${escapeHtml(triggers.join(" / "))}</div>` : ""}
+        </div>
       `;
     }
 
-    function renderProcessWatch(item) {
+    function renderNextCheck(item) {
+      const sectors = (item.sectors || []).slice(0, 3).join(" / ");
+      const processes = (item.processes || []).slice(0, 3).join(" / ");
+      const triggers = (item.triggers || []).slice(0, 3).join(" / ");
       return `
-        <span class="tag tag-cool">Process</span>
-        <h3>${html(item.process)}</h3>
-        <p class="small">${html(clip(item.focus, 110))}</p>
-        <div class="micro">確認条件: ${html(clip((item.promotion_conditions || []).join(" / "), 110))}</div>
+        <span class="label gold">${escapeHtml(item.role === "investable" ? "投資テーマ" : "背景相場")}</span>
+        <h3>${escapeHtml(item.theme)}</h3>
+        <div class="kv">
+          ${sectors ? `<div class="kv-item"><strong>注視業種:</strong> ${escapeHtml(sectors)}</div>` : ""}
+          ${processes ? `<div class="kv-item"><strong>注視工程:</strong> ${escapeHtml(processes)}</div>` : ""}
+          ${triggers ? `<div class="kv-item"><strong>昇格条件:</strong> ${escapeHtml(triggers)}</div>` : ""}
+        </div>
       `;
     }
 
     function renderSource(item) {
-      const roleLabels = {
+      const roleMap = {
         backdrop: "背景相場",
         investable: "投資テーマ",
-        sector_watch: "注視業種",
-        process_watch: "注視工程",
+        sector_watch: "業種監視",
+        process_watch: "工程監視",
       };
-      const roleLabel = roleLabels[item.role] || "source";
+      const label = roleMap[item.role] || "根拠";
+      const isTopOnly = item.url && /^https?:\/\/(?:www\.)?(?:news\.yahoo\.co\.jp|finance\.yahoo\.co\.jp|kabutan\.jp|minkabu\.jp)\/?$/.test(item.url);
       return `
-        <div class="source-item">
-          <div class="source-head">
-            <span class="tag tag-ink">${html(roleLabel)}</span>
-            <span class="micro">${html([item.source, item.timestamp].filter(Boolean).join(" / "))}</span>
+        <div class="source-head">
+          <span class="label navy">${escapeHtml(label)}</span>
+          <span class="body">${escapeHtml([item.source, item.timestamp].filter(Boolean).join(" / "))}</span>
+        </div>
+        <h3>${escapeHtml(clip(item.headline, 120))}</h3>
+        ${item.theme ? `<p class="body">関連: ${escapeHtml(item.theme)}</p>` : ""}
+        ${item.url ? `<a class="source-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(isTopOnly ? "ソーストップを開く" : "記事を開く")}</a>` : ""}
+      `;
+    }
+
+    function summaryMode(data) {
+      const investable = (data.investable_themes || []).length;
+      const associative = (data.associative_picks || []).length;
+      const direct = (data.direct_picks || []).length;
+      const watch = (data.watch_candidates || []).length;
+      const sector = (data.sector_watch || []).length;
+      const process = (data.process_watch || []).length;
+
+      if (associative > 0) return { tag: "本命候補あり", soft: false };
+      if (direct > 0 || watch > 0 || investable > 0) return { tag: "投資テーマあり", soft: false };
+      if (sector > 0 || process > 0) return { tag: "背景相場中心", soft: true };
+      return { tag: "様子見", soft: true };
+    }
+
+    function buildSummary(data) {
+      const backdrop = data.market_backdrop || [];
+      const investable = data.investable_themes || [];
+      const direct = data.direct_picks || [];
+      const associative = data.associative_picks || data.stock_picks || [];
+      const watch = data.watch_candidates || [];
+      const sectorWatch = data.sector_watch || [];
+      const processWatch = data.process_watch || [];
+      const nextGuidance = data.next_check_guidance || [];
+      const sentiment = safe(data.market_sentiment, "表示中の背景相場と監視枠から判断すると、今日は様子見を含む慎重運用が基本です。");
+      const mode = summaryMode(data);
+
+      let title = "今日は背景相場を確認しつつ、業種と工程の監視を優先";
+      let text = "会社候補を無理に出さず、翌日以降に昇格する条件が揃うかを確認する日です。";
+
+      if (associative.length > 0) {
+        title = "本命候補あり。テーマの波及先を優先して確認";
+        text = "当事者ではなく、周辺工程へ波及する本命候補が出ています。根拠テーマと本命化条件を先に確認してください。";
+      } else if (investable.length > 0 || watch.length > 0 || direct.length > 0) {
+        title = "投資テーマはあるが、会社候補は選別優先";
+        text = "テーマ自体は見えているので、直接材料と監視候補のどちらに寄せるかを整理して追う日です。";
+      }
+
+      const keyTheme = investable[0] || backdrop[0];
+      const sectorText = sectorWatch.slice(0, 3).map((item) => item.sector).join(" / ") || "まだ絞り込み中";
+      const triggerText = nextGuidance.slice(0, 2).flatMap((item) => item.triggers || []).slice(0, 3).join(" / ") || "具体波及、採用事例、受注・提携の確認";
+
+      return `
+        <div class="summary-grid">
+          <div class="summary-main">
+            <div class="status-row">
+              <span class="status ${mode.soft ? "soft" : ""}">${escapeHtml(mode.tag)}</span>
+              <span class="summary-stamp">${escapeHtml(safe(data.analysis_date, "日時未反映"))}</span>
+            </div>
+            <h2 class="summary-title">今日の結論</h2>
+            <p class="summary-text">${escapeHtml(title)}</p>
+            <p class="summary-text">${escapeHtml(text)}</p>
+            <div class="summary-points">
+              <div class="summary-point">
+                <strong>結論の軸</strong>
+                <div>${escapeHtml(keyTheme ? keyTheme.theme : sentiment)}</div>
+              </div>
+              <div class="summary-point">
+                <strong>注視業種</strong>
+                <div>${escapeHtml(sectorText)}</div>
+              </div>
+              <div class="summary-point">
+                <strong>次に確認</strong>
+                <div>${escapeHtml(triggerText)}</div>
+              </div>
+            </div>
           </div>
-          <h3>${html(clip(item.headline, 110))}</h3>
-          ${item.url ? `<a class="text-link" href="${html(item.url)}" target="_blank" rel="noopener noreferrer">リンクを見る</a>` : ""}
+          <div class="summary-side">
+            ${[
+              ["分析日時", safe(data.analysis_date, "未反映")],
+              ["投資テーマ", `${investable.length} 件`],
+              ["本命候補", `${associative.length + direct.length} 件`],
+              ["監視候補", `${watch.length} 件`],
+              ["業種・工程", `${sectorWatch.length + processWatch.length} 件`],
+            ].map(([label, value]) => `
+              <div class="metric">
+                <strong>${escapeHtml(label)}</strong>
+                <span>${escapeHtml(value)}</span>
+              </div>
+            `).join("")}
+          </div>
         </div>
       `;
+    }
+
+    function buildWatchBoard(data) {
+      const direct = data.direct_picks || [];
+      const associative = data.associative_picks || data.stock_picks || [];
+      const watch = data.watch_candidates || [];
+      const sectorWatch = data.sector_watch || [];
+      const processWatch = data.process_watch || [];
+      const hasCompanyIdeas = direct.length > 0 || associative.length > 0 || watch.length > 0;
+
+      if (hasCompanyIdeas) {
+        const blocks = [];
+        if (associative.length > 0) {
+          blocks.push(`<div class="mini-card"><h3>桶屋本命</h3>${list(associative.slice(0, 2), (item) => renderPick(item, "桶屋本命", "navy"), "本命候補はありません。")}</div>`);
+        }
+        if (direct.length > 0) {
+          blocks.push(`<div class="mini-card"><h3>直接材料</h3>${list(direct.slice(0, 2), (item) => renderPick(item, "直接材料", "gold"), "直接材料株はありません。")}</div>`);
+        }
+        if (watch.length > 0) {
+          blocks.push(`<div class="mini-card"><h3>当事者監視</h3>${list(watch.slice(0, 3), (item) => renderPick(item, "当事者監視", "gold"), "監視候補はありません。")}</div>`);
+        }
+        if (sectorWatch.length > 0 || processWatch.length > 0) {
+          blocks.push(`<div class="mini-card"><h3>補助監視</h3><div class="kv">${sectorWatch[0] ? `<div class="kv-item"><strong>注視業種:</strong> ${escapeHtml(sectorWatch.slice(0, 2).map((item) => item.sector).join(" / "))}</div>` : ""}${processWatch[0] ? `<div class="kv-item"><strong>注視工程:</strong> ${escapeHtml(processWatch.slice(0, 2).map((item) => item.process).join(" / "))}</div>` : ""}</div></div>`);
+        }
+        return `<div class="grid-2">${blocks.join("")}</div>`;
+      }
+
+      return `
+        <div class="grid-2">
+          <div class="tone-card">
+            <h3>注視業種</h3>
+            <p class="body">今日は会社候補を無理に出さず、まず業種単位で昇格条件を待つ構成です。</p>
+            ${list(sectorWatch.slice(0, 4), (item) => renderWatchBlock(item, "sector"), "注視業種はまだ整理中です。")}
+          </div>
+          <div class="tone-card">
+            <h3>注視工程</h3>
+            <p class="body">会社名より先に、どの工程に波及するかを追うための監視枠です。</p>
+            ${list(processWatch.slice(0, 4), (item) => renderWatchBlock(item, "process"), "注視工程はまだ整理中です。")}
+          </div>
+        </div>
+      `;
+    }
+
+    function collectSources(data) {
+      const seeded = [];
+      const pushNews = (role, theme, items) => {
+        (items || []).forEach((item) => {
+          seeded.push({
+            role,
+            theme,
+            source: item.source,
+            headline: item.headline,
+            url: item.url,
+            timestamp: item.timestamp,
+          });
+        });
+      };
+
+      (data.market_backdrop || []).slice(0, 2).forEach((item) => pushNews("backdrop", item.theme, item.news_items));
+      (data.investable_themes || []).slice(0, 4).forEach((item) => pushNews("investable", item.theme, item.news_items));
+      (data.source_list || []).forEach((item) => seeded.push(item));
+
+      return dedupe(
+        seeded.filter((item) => item && item.headline),
+        (item) => safe(item.url, "").trim() || `${safe(item.role, "")}|${safe(item.source, "")}|${safe(item.headline, "")}`
+      );
+    }
+
+    function renderPage(data) {
+      $("summary-loading").hidden = true;
+      $("summary").hidden = false;
+      $("summary").innerHTML = buildSummary(data);
+
+      const backdrop = (data.market_backdrop || []).slice(0, 2);
+      const investable = (data.investable_themes || []).slice(0, 4);
+      const nextGuidance = dedupe(data.next_check_guidance || [], (item) => `${item.role}|${item.theme}`);
+      const sources = collectSources(data).slice(0, 8);
+
+      $("watch-board").innerHTML = buildWatchBoard(data);
+      $("backdrop").innerHTML = list(backdrop, (item) => renderTheme(item, "背景相場"), "背景相場はまだ整理中です。");
+      $("next-checks").innerHTML = list(nextGuidance.slice(0, 4), renderNextCheck, "次に確認する条件はまだ整理中です。");
+      $("themes").innerHTML = investable.length > 0
+        ? list(investable, (item) => renderTheme(item, "投資テーマ"), "投資テーマはまだ整理中です。")
+        : renderEmpty("今日は背景相場中心で、投資テーマは見送りです。会社名を急がず、業種と工程の昇格条件を優先して確認します。");
+      $("sources").innerHTML = list(sources, renderSource, "今回の表示に使った根拠ソースはまだ反映されていません。");
+    }
+
+    function renderError(error) {
+      $("summary-loading").hidden = true;
+      $("summary").hidden = false;
+      $("summary").innerHTML = `
+        <div class="error-box">
+          <div class="error-title">最新レポートを読み込めませんでした</div>
+          <div>${escapeHtml(`JSON の取得に失敗しました: ${error.message}`)}</div>
+          <div class="footer-links">
+            <a class="hero-link" href="./latest-analysis-full.md">Markdown を開く</a>
+            <a class="hero-link" href="./latest-analysis-full.json">JSON を開く</a>
+          </div>
+        </div>
+      `;
+      $("watch-board").innerHTML = renderEmpty("表示に失敗しました。詳細レポートの直接確認を優先してください。");
+      $("backdrop").innerHTML = renderEmpty("背景相場を読み込めませんでした。");
+      $("next-checks").innerHTML = renderEmpty("昇格条件を読み込めませんでした。");
+      $("themes").innerHTML = renderEmpty("投資テーマを読み込めませんでした。");
+      $("sources").innerHTML = renderEmpty("根拠ソースを読み込めませんでした。");
     }
 
     fetch("./latest-analysis-full.json", { cache: "no-store" })
@@ -560,101 +765,8 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then((data) => {
-        const backdrop = data.market_backdrop || [];
-        const investable = data.investable_themes || [];
-        const direct = data.direct_picks || [];
-        const associative = data.associative_picks || data.stock_picks || [];
-        const watch = data.watch_candidates || [];
-        const nextChecks = data.next_checks || [];
-        const sectorWatch = data.sector_watch || [];
-        const processWatch = data.process_watch || [];
-        const sources = data.source_list || [];
-        const hasIdeas = investable.length > 0 || direct.length > 0 || associative.length > 0 || watch.length > 0;
-
-        document.getElementById("hero-meta").innerHTML = [
-          ["分析日時", data.analysis_date],
-          ["背景", backdrop.length],
-          ["投資", investable.length],
-          ["本命", direct.length + associative.length],
-          ["監視", watch.length],
-        ].map(([label, value]) => `
-          <div class="meta-item">
-            <strong>${html(label)}</strong>
-            <span>${html(value)}</span>
-          </div>
-        `).join("");
-
-        document.getElementById("latest-analysis").innerHTML = `
-          <section class="lead">
-            <div class="status-row">
-              <span class="status-badge ${hasIdeas ? "status-live" : "status-calm"}">${html(hasIdeas ? "投資テーマあり" : "背景相場中心")}</span>
-              <span class="stamp">${html(data.analysis_date || "日時不明")}</span>
-            </div>
-            <h3 class="lead-title">${html(hasIdeas ? "材料と資金の流れを追う日" : "個別より地合いを先に確認する日")}</h3>
-            <p class="lead-text">${html(data.market_sentiment || "センチメント情報はありません。")}</p>
-          </section>
-          <div class="feature-grid">
-            <section class="feature-block">
-              <div class="block-title">次に確認</div>
-              ${renderBulletList(nextChecks.slice(0, 4), "次の確認ポイントはありません。")}
-            </section>
-            <section class="feature-block">
-              <div class="block-title">注視業種</div>
-              ${renderList(sectorWatch.slice(0, 3), renderSectorWatch, "注視業種はありません。")}
-            </section>
-            <section class="feature-block">
-              <div class="block-title">注視工程</div>
-              ${renderList(processWatch.slice(0, 3), renderProcessWatch, "注視工程はありません。")}
-            </section>
-          </div>
-        `;
-
-        document.getElementById("themes").innerHTML = [
-          `<div class="rail-group">
-            <div class="group-title">Investable Themes</div>
-            ${renderList(investable.slice(0, 4), (item) => renderTheme(item, "investable"), "今日は背景相場中心で、投資テーマは見送りです。")}
-          </div>`,
-          `<div class="rail-group">
-            <div class="group-title">Background</div>
-            ${renderList(backdrop.slice(0, 2), (item) => renderTheme(item, "backdrop"), "背景相場のメモはありません。")}
-          </div>`,
-        ].join("");
-
-        const picksSections = [];
-        if (direct.length === 0 && associative.length === 0 && watch.length === 0) {
-          picksSections.push(`<div class="empty">本日は個別銘柄より、背景相場と注視ボードの優先度が高い日です。</div>`);
-        }
-        picksSections.push(`
-          <div class="rail-group">
-            <div class="group-title">Direct Picks</div>
-            ${renderList(direct.slice(0, 2), (item) => renderPick(item, "Direct"), "直接材料の本命はありません。")}
-          </div>
-        `);
-        picksSections.push(`
-          <div class="rail-group">
-            <div class="group-title">Associative Picks</div>
-            ${renderList(associative.slice(0, 2), (item) => renderPick(item, "Associative"), "連想の本命候補はありません。")}
-          </div>
-        `);
-        picksSections.push(`
-          <div class="rail-group">
-            <div class="group-title">Watch Candidates</div>
-            ${renderList(watch.slice(0, 3), (item) => renderPick(item, "Watch"), "監視候補はありません。")}
-          </div>
-        `);
-        document.getElementById("picks").innerHTML = picksSections.join("");
-
-        document.getElementById("sources").innerHTML = sources.length > 0
-          ? sources.slice(0, 10).map(renderSource).join("")
-          : `<div class="empty">表示できるソースはありません。</div>`;
-      })
-      .catch((error) => {
-        const message = `最新レポートを読み込めませんでした: ${error.message}`;
-        for (const id of ["hero-meta", "latest-analysis", "themes", "picks", "sources"]) {
-          document.getElementById(id).innerHTML = `<div class="empty">${html(message)}</div>`;
-        }
-      });
+      .then(renderPage)
+      .catch(renderError);
   </script>
 </body>
 </html>
