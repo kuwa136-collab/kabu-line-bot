@@ -217,6 +217,50 @@
       border-bottom: 0;
     }
 
+    .story-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .ref-list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .ref-item {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      align-items: flex-start;
+      line-height: 1.7;
+    }
+
+    .ref-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(29, 62, 99, 0.25);
+      color: var(--navy);
+      background: var(--navy-soft);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ref-chip:hover {
+      border-color: var(--navy);
+    }
+
     .story-link {
       color: var(--ink);
       text-decoration: none;
@@ -381,11 +425,69 @@
       );
     }
 
+    function newsKey(item) {
+      return safe(item?.url, "").trim() || `${safe(item?.source, "")}|${norm(item?.theme)}|${norm(item?.headline)}`;
+    }
+
+    function buildNewsIndex(items) {
+      return new Map(arr(items).map((item, index) => [newsKey(item), index + 1]));
+    }
+
+    function storyRefNumber(item, newsIndex) {
+      return newsIndex.get(newsKey(item)) || null;
+    }
+
+    function renderStoryRefList(items, newsIndex, emptyText = "関連ニュース参照はまだありません。") {
+      const refs = uniq(
+        arr(items)
+          .map((item) => ({ item, number: storyRefNumber(item, newsIndex) }))
+          .filter((entry) => entry.number),
+        (entry) => `${entry.number}`
+      ).slice(0, 3);
+
+      if (!refs.length) return `<div class="small">${esc(emptyText)}</div>`;
+
+      return `
+        <ul class="ref-list">
+          ${refs.map(({ item, number }) => `
+            <li class="ref-item">
+              <a class="ref-chip" href="#story-${number}">#${number}</a>
+              <span>${esc(clip(item.headline, 58))}</span>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+    }
+
+    function renderDeskNotes(items, newsIndex, emptyText) {
+      const notes = arr(items).slice(0, 6).map((item) => {
+        const refNumber = storyRefNumber(item, newsIndex);
+        const reference = refNumber
+          ? `<a class="ref-chip" href="#story-${refNumber}">#${refNumber}</a>`
+          : `<span class="small">${esc(clip(item.headline, 58))}</span>`;
+        const meta = [safe(item.theme, "関連テーマなし"), sourceLabel(item.source)]
+          .filter(Boolean)
+          .join(" / ");
+        return `
+          <li class="ref-item">
+            ${reference}
+            <span>${esc(meta)}</span>
+          </li>
+        `;
+      });
+
+      return notes.length
+        ? `<ul class="ref-list">${notes.join("")}</ul>`
+        : `<div class="empty">${esc(emptyText)}</div>`;
+    }
+
     function sourceDesk(data) {
       const seeded = [];
-      collectNews(data).forEach((item) => seeded.push(item));
       arr(data.source_list).forEach((item) => seeded.push(item));
       arr(data.hypothesis_sources).forEach((item) => seeded.push(item));
+      if (!arr(data.source_list).length) {
+        collectNews(data).forEach((item) => seeded.push(item));
+      }
       if (!arr(data.hypothesis_sources).length) {
         arr(data.trending_themes).forEach((theme) => {
           arr(theme.key_tweets).slice(0, 1).forEach((text) => seeded.push({
@@ -447,8 +549,9 @@
 
       const main = lead
         ? `
-          <article class="story">
+          <article class="story" id="story-1">
             <div class="badge-row">
+              <span class="badge red">#1</span>
               <span class="badge ${lead.role === "investable" ? "navy" : "green"}">${lead.role === "investable" ? "トップ記事" : "背景トップ"}</span>
               <span class="badge">${esc(sourceLabel(lead.source))}</span>
             </div>
@@ -495,27 +598,40 @@
 
     function renderTopNews(data) {
       const news = collectNews(data);
-      const headlineRows = news.slice(0, 8).map((item, index) => [
-        `${index + 1}`,
-        item.url ? `<a class="story-link" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(clip(item.headline, 78))}</a>` : esc(clip(item.headline, 78)),
-        esc(clip(item.summary || item.why || "-", 92)),
-        esc(item.theme || "-"),
-        `<span class="mono">${esc(sourceLabel(item.source))}${item.timestamp ? ` / ${esc(jpTime(item.timestamp))}` : ""}</span>`,
-      ]);
+      const stories = news.slice(1, 8);
 
       return `
         <div class="section-head">
           <div>
             <p class="label">Top News</p>
             <h3>主要ニュース</h3>
-            <p class="desc">見出しだけで終わらせず、要点まで朝刊上で読めるようにします。</p>
+            <p class="desc">一面トップ以外の主要ニュースを、本文つきでここにまとめます。</p>
           </div>
         </div>
-        ${renderTable(["順位", "見出し", "要点", "テーマ", "ソース"], headlineRows)}
+        ${stories.length ? `
+          <div class="story-list">
+            ${stories.map((item, index) => {
+              const storyNumber = index + 2;
+              return `
+                <article class="story-item" id="story-${storyNumber}">
+                  <div class="story-meta">
+                    <span class="badge red">#${storyNumber}</span>
+                    <span class="badge">${esc(sourceLabel(item.source))}</span>
+                    <span class="small">${item.timestamp ? esc(jpTime(item.timestamp)) : "日時不明"}</span>
+                  </div>
+                  <h4>${item.url ? `<a class="story-link" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.headline)}</a>` : esc(item.headline)}</h4>
+                  <p class="body">${esc(item.summary || item.why || "要点整理なし")}</p>
+                  <p class="small">関連テーマ: ${esc(item.theme || "未整理")}</p>
+                </article>
+              `;
+            }).join("")}
+          </div>
+        ` : '<div class="empty">一面トップ以外の主要ニュースはまだありません。</div>'}
       `;
     }
 
     function renderThemeNews(data) {
+      const newsIndex = buildNewsIndex(collectNews(data));
       const themes = (arr(data.investable_themes).length ? arr(data.investable_themes) : arr(data.market_backdrop)).slice(0, 4);
       if (!themes.length) {
         return `
@@ -545,17 +661,11 @@
               </div>
               <h4 style="margin-top:10px;">${esc(theme.theme)}</h4>
               <p class="body">${esc(theme.why_it_matters || "重要度整理はこれからです。")}</p>
-              ${arr(theme.news_items).length ? `
-                <ul>
-                  ${arr(theme.news_items).slice(0, 3).map((item) => `
-                    <li>
-                      <strong>${esc(item.headline)}</strong><br>
-                      <span class="body">${esc(item.summary || "要点なし")}</span><br>
-                      <span class="small">${esc(sourceLabel(item.source))}${item.timestamp ? ` / ${esc(jpTime(item.timestamp))}` : ""}</span>
-                    </li>
-                  `).join("")}
-                </ul>
-              ` : '<div class="small">関連ニュースはまだありません。</div>'}
+              ${arr(theme.beneficiary_processes).length ? `<p class="small"><strong>注視工程:</strong> ${esc(arr(theme.beneficiary_processes).slice(0, 3).join(" / "))}</p>` : ""}
+              <div class="card" style="margin-top:14px;">
+                <p class="label">関連記事</p>
+                ${renderStoryRefList(theme.news_items, newsIndex)}
+              </div>
             </article>
           `).join("")}
         </div>
@@ -564,15 +674,10 @@
 
     function renderSourceDesk(data) {
       const desk = sourceDesk(data);
+      const newsIndex = buildNewsIndex(collectNews(data));
       const evidence = desk.filter((item) => deskKind(item) === "evidence");
       const background = desk.filter((item) => deskKind(item) === "background");
       const hypothesis = desk.filter((item) => deskKind(item) === "hypothesis");
-      const rows = (items) => items.slice(0, 8).map((item) => [
-        esc(item.theme || "-"),
-        item.url ? `<a class="story-link" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(clip(item.headline, 70))}</a>` : esc(clip(item.headline, 70)),
-        esc(sourceLabel(item.source)),
-        `<span class="mono">${esc(item.timestamp ? jpTime(item.timestamp) : "-")}</span>`,
-      ]);
 
       return `
         <div class="section-head">
@@ -585,16 +690,16 @@
         <div class="two-col">
           <div class="memo">
             <p class="label">根拠源</p>
-            ${renderTable(["関連テーマ", "見出し", "ソース", "時刻"], rows(evidence))}
+            ${renderDeskNotes(evidence, newsIndex, "根拠源はまだ整理されていません。")}
           </div>
           <div class="memo">
             <p class="label">背景源</p>
-            ${renderTable(["関連テーマ", "見出し", "ソース", "時刻"], rows(background))}
+            ${renderDeskNotes(background, newsIndex, "背景源はまだ整理されていません。")}
           </div>
         </div>
         <div class="memo" style="margin-top:16px;">
           <p class="label">仮説源</p>
-          ${renderTable(["関連テーマ", "観測メモ", "ソース", "時刻"], rows(hypothesis))}
+          ${renderDeskNotes(hypothesis, newsIndex, "仮説源はまだ薄いです。")}
         </div>
       `;
     }
