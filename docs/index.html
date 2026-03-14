@@ -6,32 +6,186 @@
   <title>株クラ朝刊 Slides</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap");
-    :root{--paper:#f7f2e8;--paper2:#fffdf7;--ink:#14191f;--muted:#5d6872;--line:rgba(20,25,31,.11);--navy:#1f405f;--navyS:rgba(31,64,95,.1);--red:#8f3432;--redS:rgba(143,52,50,.1);--green:#356a5b;--greenS:rgba(53,106,91,.1);--gold:#b08848;--goldS:rgba(176,136,72,.12);--shadow:0 32px 90px rgba(20,25,31,.16);--r:28px}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}
-    body{margin:0;color:var(--ink);font-family:"Zen Kaku Gothic New","BIZ UDPGothic","Yu Gothic",sans-serif;background:radial-gradient(circle at top left,rgba(31,64,95,.18),transparent 28%),radial-gradient(circle at bottom right,rgba(143,52,50,.12),transparent 24%),linear-gradient(180deg,#e7dfd1,#d9cfbf 48%,#ece4d8)}
-    a{color:inherit}.app{max-width:1380px;margin:0 auto;padding:24px 20px 72px}
-    .toolbar{position:sticky;top:14px;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:16px 18px;margin-bottom:26px;border:1px solid var(--line);border-radius:22px;background:rgba(247,242,232,.84);backdrop-filter:blur(14px);box-shadow:0 16px 40px rgba(20,25,31,.08)}
-    .brand{display:grid;gap:6px}.brand h1,.title,.quote h3,.storyTitle,.col h3,.board h3{font-family:"Shippori Mincho","Yu Mincho",serif}.brand h1{margin:0;font-size:clamp(24px,3vw,38px);line-height:1}.brand p:last-child{margin:0;color:var(--muted);font-size:13px}
-    .eyebrow{margin:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-    .toolbar-meta,.tags,.chips,.footer-links,.pillRow,.source-row,.heroRibbon{display:flex;flex-wrap:wrap;gap:10px}
-    .meta,.link,.tag,.chip{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,253,247,.92);text-decoration:none;font-size:12px}
-    .link:hover{border-color:var(--navy);color:var(--navy)}.redTag{border-color:rgba(143,52,50,.24);background:var(--redS);color:var(--red)}.navyTag{border-color:rgba(31,64,95,.24);background:var(--navyS);color:var(--navy)}.greenTag{border-color:rgba(53,106,91,.24);background:var(--greenS);color:var(--green)}.goldTag{border-color:rgba(176,136,72,.24);background:var(--goldS);color:var(--gold)}
-    .deck{display:grid;gap:28px;scroll-snap-type:y proximity}.slide{position:relative;aspect-ratio:16/9;min-height:690px;padding:36px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,rgba(255,253,247,.97),rgba(244,238,227,.98));box-shadow:var(--shadow);overflow:hidden;scroll-snap-align:start}.slide:before,.slide:after{content:"";position:absolute;border-radius:999px;pointer-events:none}.slide:before{width:360px;height:360px;top:-150px;right:-110px;background:radial-gradient(circle,rgba(31,64,95,.12),transparent 68%)}.slide:after{width:280px;height:280px;left:-80px;bottom:-120px;background:radial-gradient(circle,rgba(143,52,50,.12),transparent 70%)}.cover{background:linear-gradient(135deg,rgba(255,253,247,.99),rgba(238,231,217,.98) 64%,rgba(232,222,207,.98))}.ink{background:linear-gradient(135deg,rgba(255,253,247,.98),rgba(236,242,246,.98))}.red{background:linear-gradient(135deg,rgba(255,253,247,.98),rgba(248,237,233,.98))}.green{background:linear-gradient(135deg,rgba(255,253,247,.98),rgba(234,242,238,.98))}
-    .head{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:24px}.title{margin:0;font-size:clamp(34px,4vw,58px);line-height:1.03}.desc{margin:10px 0 0;max-width:44ch;color:var(--muted);font-size:14px;line-height:1.8}.no{display:inline-flex;align-items:center;justify-content:center;min-width:84px;min-height:84px;border:1px solid var(--line);border-radius:20px;background:rgba(255,253,247,.9);font-size:13px;line-height:1.5;color:var(--muted);text-align:center}
-    .grid,.storyGrid,.watchGrid,.decisionGrid{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr .98fr;gap:20px;align-items:stretch}.heroGrid{grid-template-columns:1.12fr .88fr}.sourceDeck{grid-template-columns:1.12fr .94fr .94fr}
-    .quote,.panel,.card,.col,.board,.themeCard,.storyCard,.cand,.layerCard{position:relative;border:1px solid var(--line);border-radius:24px;background:rgba(255,253,247,.92);overflow:hidden}.panel,.col{height:100%;padding:20px}.card,.themeCard,.storyCard,.cand,.layerCard{padding:16px}.board{height:100%;padding:20px}
-    .quote{padding:22px;background:linear-gradient(180deg,rgba(255,253,247,.98),rgba(255,247,240,.92))}.quote h3{margin:12px 0 0;font-size:clamp(30px,3.2vw,48px);line-height:1.24}.heroRibbon{margin-top:16px}
-    .metrics,.insights,.themeGrid,.stack,.checks,.layerStack{display:grid;gap:14px}.metrics{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px}.metric{min-height:104px;padding:14px 16px;border:1px solid var(--line);border-radius:22px;background:rgba(255,253,247,.92)}.metric span{font-size:13px;color:var(--muted)}.metric strong{display:block;margin-top:12px;font-size:30px;line-height:1}.insights{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px}.insight{min-height:164px}.toneR{background:linear-gradient(180deg,rgba(143,52,50,.1),rgba(255,253,247,.92))}.toneN{background:linear-gradient(180deg,rgba(31,64,95,.1),rgba(255,253,247,.92))}.toneG{background:linear-gradient(180deg,rgba(53,106,91,.1),rgba(255,253,247,.92))}
-    .visual,.matrix,.bridge{height:100%;padding:14px;border:1px solid var(--line);border-radius:26px;background:radial-gradient(circle at top left,rgba(31,64,95,.12),rgba(255,253,247,.98) 56%)}.matrix{background:radial-gradient(circle at center,rgba(31,64,95,.12),rgba(255,253,247,.98) 62%)}.bridge{padding:12px 0 18px;background:transparent;border:0}.visual svg,.matrix svg,.bridge svg,.miniGraphic svg{width:100%;height:auto;display:block}.caption{margin:12px 0 0;color:var(--muted);font-size:13px;line-height:1.7}
-    .themeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.themeCard strong,.insight strong,.storyCard strong,.cand strong,.layerCard strong{font-size:18px}.body,.small{margin:10px 0 0;line-height:1.9}.body{font-size:14px}.small{font-size:13px;color:var(--muted)}.heroNote{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,253,247,.9)}
-    .storyCard{min-height:248px}.feature{min-height:100%;padding:22px;background:linear-gradient(180deg,rgba(31,64,95,.08),rgba(255,253,247,.94))}.storyHead,.candHead,.layerHead{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.storyIndex{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border:1px solid rgba(20,25,31,.14);border-radius:14px;background:rgba(255,253,247,.92);font-family:"Shippori Mincho",serif;font-size:18px}.storyTitle{margin:16px 0 0;font-size:clamp(26px,2.4vw,38px);line-height:1.25}.storyCard:not(.feature) .storyTitle{font-size:24px}.storyTitle a{text-decoration:none;border-bottom:1px solid rgba(31,64,95,.22)}.storyTitle a:hover{color:var(--navy);border-bottom-color:var(--navy)}.summary{margin:14px 0 0;font-size:15px;line-height:1.95}.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px}.dot{font-size:16px;color:var(--muted)}.miniGraphic{margin-top:16px;padding:10px;border:1px solid var(--line);border-radius:20px;background:rgba(255,253,247,.94)}
-    .cand{min-height:176px}.bar{width:100%;height:8px;margin-top:10px;border-radius:999px;background:rgba(20,25,31,.08);overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--gold))}
-    .layers{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.col{min-height:370px}.col h3,.board h3{margin:12px 0 8px;font-size:28px;line-height:1.2}.layerStack{margin-top:16px}.sourceTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.sourceStat{display:grid;place-items:center;min-width:56px;min-height:56px;border:1px solid var(--line);border-radius:18px;background:rgba(255,253,247,.9);font-family:"Shippori Mincho",serif;font-size:24px;color:rgba(20,25,31,.55)}
-    .checkCard{padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,253,247,.92)}.checkCard strong{display:block;margin-top:10px;line-height:1.6}
-    .themeCard,.storyCard,.cand,.col,.board{box-shadow:0 12px 32px rgba(20,25,31,.05)}.themeCard:before,.cand:before,.col:before,.board:before{content:"";position:absolute;left:18px;top:0;width:72px;height:4px;border-radius:0 0 10px 10px;background:linear-gradient(90deg,var(--navy),transparent)}.storyCard:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(31,64,95,.03),transparent 42%);pointer-events:none}.themeCard:after{content:attr(data-no);position:absolute;right:16px;top:10px;font-family:"Shippori Mincho",serif;font-size:56px;line-height:1;color:rgba(20,25,31,.06)}.sourceRed:before{background:linear-gradient(90deg,var(--red),transparent)}.sourceGold:before{background:linear-gradient(90deg,var(--gold),transparent)}.sourceNavy:before{background:linear-gradient(90deg,var(--navy),transparent)}.watchDirect:before{background:linear-gradient(90deg,var(--red),transparent)}.watchAssociate:before{background:linear-gradient(90deg,var(--gold),transparent)}.watchWatch:before{background:linear-gradient(90deg,var(--navy),transparent)}.miniGraphic{background:linear-gradient(180deg,rgba(255,253,247,.98),rgba(246,241,232,.92))}
-    .empty{display:grid;place-items:center;min-height:180px;padding:18px;border:1px dashed rgba(20,25,31,.16);border-radius:24px;background:rgba(255,253,247,.7);color:var(--muted);text-align:center;line-height:1.8}.footer{margin-top:22px;padding:16px 6px 0;color:rgba(20,25,31,.72);font-size:13px;line-height:1.8}.error{padding:18px;border:1px solid rgba(143,52,50,.22);border-radius:20px;background:rgba(143,52,50,.08);color:var(--red)}
-    @media (max-width:1120px){.themeGrid,.insights,.layers,.sourceDeck{grid-template-columns:1fr}}
-    @media (max-width:980px){.toolbar,.grid,.storyGrid,.watchGrid,.decisionGrid{grid-template-columns:1fr}.toolbar{position:static;align-items:flex-start}.toolbar-meta{justify-content:flex-start}.slide{aspect-ratio:auto;min-height:0;padding:24px}.no{min-width:68px;min-height:68px}}
+    :root {
+      --paper: #ece4d6;
+      --sheet: rgba(255, 252, 247, 0.96);
+      --sheet-strong: rgba(255, 255, 255, 0.88);
+      --ink: #131920;
+      --muted: #67717d;
+      --line: rgba(19, 25, 32, 0.1);
+      --navy: #1d4162;
+      --navy-soft: rgba(29, 65, 98, 0.1);
+      --red: #973936;
+      --red-soft: rgba(151, 57, 54, 0.1);
+      --gold: #aa8450;
+      --gold-soft: rgba(170, 132, 80, 0.12);
+      --green: #356958;
+      --green-soft: rgba(53, 105, 88, 0.11);
+      --shadow: 0 30px 90px rgba(19, 25, 32, 0.14);
+      --radius: 34px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Zen Kaku Gothic New", "BIZ UDPGothic", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(29, 65, 98, 0.18), transparent 24%),
+        radial-gradient(circle at 86% 86%, rgba(151, 57, 54, 0.16), transparent 22%),
+        linear-gradient(180deg, #ddd4c6 0%, #d2c7b4 46%, #ebe1d2 100%);
+    }
+    a { color: inherit; }
+    .app { max-width: 1420px; margin: 0 auto; padding: 24px 20px 80px; }
+    .toolbar {
+      position: sticky; top: 14px; z-index: 30; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+      padding: 16px 18px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 24px;
+      background: rgba(244, 238, 230, 0.86); backdrop-filter: blur(14px); box-shadow: 0 18px 50px rgba(19, 25, 32, 0.08);
+    }
+    .brand { display: grid; gap: 6px; }
+    .brand h1, .title, .heroHeadline, .storyTitle, .panelTitle, .boardTitle, .sourceTitle {
+      font-family: "Shippori Mincho", "Yu Mincho", serif;
+    }
+    .brand h1 { margin: 0; font-size: clamp(24px, 3vw, 40px); line-height: 1; }
+    .brand p:last-child { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+    .eyebrow { margin: 0; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .toolbarMeta, .tagRow, .chips, .heroTicker, .storyMeta, .storyFlow, .footerLinks { display: flex; flex-wrap: wrap; gap: 10px; }
+    .meta, .link, .tag, .chip {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 7px 12px;
+      border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 253, 248, 0.94); text-decoration: none; font-size: 12px;
+    }
+    .link:hover { border-color: var(--navy); color: var(--navy); }
+    .redTag { border-color: rgba(151, 57, 54, 0.24); background: var(--red-soft); color: var(--red); }
+    .navyTag { border-color: rgba(29, 65, 98, 0.24); background: var(--navy-soft); color: var(--navy); }
+    .goldTag { border-color: rgba(170, 132, 80, 0.24); background: var(--gold-soft); color: var(--gold); }
+    .greenTag { border-color: rgba(53, 105, 88, 0.24); background: var(--green-soft); color: var(--green); }
+    .deck { display: grid; gap: 28px; scroll-snap-type: y proximity; }
+    .slide {
+      position: relative; aspect-ratio: 16 / 9; min-height: 720px; padding: 34px; border: 1px solid var(--line); border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(245, 239, 230, 0.98)); box-shadow: var(--shadow); overflow: hidden;
+      scroll-snap-align: start;
+    }
+    .slide::before, .slide::after { content: ""; position: absolute; border-radius: 999px; pointer-events: none; }
+    .slide::before {
+      width: 420px; height: 420px; top: -180px; right: -120px; background: radial-gradient(circle, rgba(29, 65, 98, 0.12), transparent 68%);
+    }
+    .slide::after {
+      width: 320px; height: 320px; left: -90px; bottom: -130px; background: radial-gradient(circle, rgba(151, 57, 54, 0.12), transparent 72%);
+    }
+    .cover { background: linear-gradient(140deg, rgba(255, 252, 247, 0.99), rgba(239, 231, 218, 0.98) 66%, rgba(230, 220, 206, 0.98)); }
+    .ink { background: linear-gradient(140deg, rgba(255, 252, 247, 0.98), rgba(236, 241, 245, 0.98)); }
+    .red { background: linear-gradient(140deg, rgba(255, 252, 247, 0.98), rgba(248, 236, 232, 0.98)); }
+    .green { background: linear-gradient(140deg, rgba(255, 252, 247, 0.98), rgba(235, 243, 238, 0.98)); }
+    .head {
+      position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 22px;
+    }
+    .title { margin: 0; font-size: clamp(36px, 4vw, 60px); line-height: 1.04; }
+    .desc { margin: 10px 0 0; max-width: 44ch; color: var(--muted); font-size: 14px; line-height: 1.85; }
+    .no {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 84px; min-height: 84px;
+      border: 1px solid var(--line); border-radius: 22px; background: rgba(255, 253, 248, 0.9); color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center;
+    }
+    .heroLayout, .storiesLayout, .themeLayout, .watchLayout, .sourceLayout, .zeroLayout {
+      position: relative; z-index: 1; display: grid; gap: 20px; align-items: stretch;
+    }
+    .heroLayout { grid-template-columns: 1.04fr 0.96fr; }
+    .storiesLayout { grid-template-columns: 1.06fr 0.94fr; }
+    .themeLayout { grid-template-columns: 1.08fr 0.92fr; }
+    .watchLayout { grid-template-columns: 0.98fr 1.02fr; }
+    .sourceLayout, .zeroLayout { grid-template-columns: 1.04fr 0.96fr; }
+    .leadPanel, .figurePanel, .storyPoster, .noteCard, .watchCard, .sourceCard, .miniBoard {
+      position: relative; border: 1px solid var(--line); border-radius: 30px; background: var(--sheet); box-shadow: 0 16px 44px rgba(19, 25, 32, 0.06); overflow: hidden;
+    }
+    .leadPanel, .storyPoster, .noteCard, .watchCard, .sourceCard, .miniBoard { padding: 20px; }
+    .leadPanel::before, .storyPoster::before, .noteCard::before, .watchCard::before, .sourceCard::before, .miniBoard::before {
+      content: ""; position: absolute; left: 18px; top: 0; width: 86px; height: 4px; border-radius: 0 0 10px 10px; background: linear-gradient(90deg, var(--navy), transparent);
+    }
+    .leadPanel::before, .storyPoster.featured::before { background: linear-gradient(90deg, var(--red), transparent); }
+    .figurePanel {
+      padding: 18px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(29, 65, 98, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(255, 253, 248, 0.99), rgba(244, 238, 229, 0.96));
+    }
+    .figurePanel svg, .storyVisual svg { width: 100%; height: auto; display: block; }
+    .heroHeadline { margin: 14px 0 0; font-size: clamp(48px, 5vw, 78px); line-height: 1.06; letter-spacing: -0.02em; text-wrap: balance; }
+    .heroSentence, .storySummary, .bodyCopy, .miniCopy, .figureNote { color: var(--muted); line-height: 1.9; }
+    .heroSentence { margin: 18px 0 0; max-width: 36ch; font-size: 15px; }
+    .heroTicker { margin-top: 18px; }
+    .tickerCard {
+      padding: 14px 16px; border: 1px solid var(--line); border-radius: 22px; background: var(--sheet-strong); min-width: 180px; flex: 1 1 180px;
+    }
+    .tickerCard strong { display: block; margin-top: 8px; line-height: 1.55; font-size: 15px; }
+    .factStrip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .factCard {
+      min-height: 116px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 24px; background: var(--sheet-strong);
+    }
+    .factCard span { display: block; color: var(--muted); font-size: 13px; }
+    .factCard strong { display: block; margin-top: 12px; font-size: 30px; line-height: 1; }
+    .heroAgenda {
+      margin-top: 18px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 24px;
+      background: linear-gradient(180deg, rgba(29, 65, 98, 0.06), rgba(255, 253, 248, 0.96));
+    }
+    .heroAgenda strong { display: block; margin-top: 8px; font-size: 18px; }
+    .heroAgenda p { margin: 10px 0 0; }
+    .figureNote { margin: 14px 0 0; font-size: 13px; }
+    .storyStack, .watchStack, .sourceShelf, .boardStack, .sourceItems, .themeNotes { display: grid; gap: 16px; }
+    .storyPoster { display: grid; gap: 14px; align-content: start; }
+    .storyPoster.featured {
+      min-height: 100%; padding: 24px; background: linear-gradient(180deg, rgba(29, 65, 98, 0.08), rgba(255, 252, 247, 0.98));
+    }
+    .storyVisual {
+      padding: 10px; border: 1px solid var(--line); border-radius: 26px;
+      background:
+        radial-gradient(circle at top left, rgba(29, 65, 98, 0.13), transparent 36%),
+        linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(246, 241, 233, 0.96));
+    }
+    .storyTitle { margin: 0; font-size: clamp(26px, 2.3vw, 38px); line-height: 1.28; text-wrap: balance; }
+    .storyPoster:not(.featured) .storyTitle { font-size: 24px; }
+    .storyTitle a { text-decoration: none; border-bottom: 1px solid rgba(29, 65, 98, 0.22); }
+    .storyTitle a:hover { color: var(--navy); border-bottom-color: var(--navy); }
+    .storySummary { margin: 0; font-size: 14px; }
+    .flowDot { color: var(--muted); font-size: 16px; }
+    .themeNotes { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+    .noteCard { min-height: 204px; }
+    .noteCard[data-tone="red"]::before { background: linear-gradient(90deg, var(--red), transparent); }
+    .noteCard[data-tone="navy"]::before { background: linear-gradient(90deg, var(--navy), transparent); }
+    .noteCard::after {
+      content: attr(data-no); position: absolute; right: 16px; top: 10px; font-family: "Shippori Mincho", serif; font-size: 56px; line-height: 1; color: rgba(19, 25, 32, 0.06);
+    }
+    .panelTitle, .boardTitle, .sourceTitle { margin: 12px 0 0; font-size: 28px; line-height: 1.18; }
+    .mentionStat {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 54px; min-height: 54px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255, 253, 248, 0.92);
+      font-family: "Shippori Mincho", serif; font-size: 24px; color: rgba(19, 25, 32, 0.56);
+    }
+    .noteHead, .sourceHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .noteCard strong, .watchCard strong, .sourceItem strong, .miniBoard strong { display: block; margin-top: 10px; line-height: 1.6; }
+    .watchCard[data-tone="red"]::before { background: linear-gradient(90deg, var(--red), transparent); }
+    .watchCard[data-tone="gold"]::before { background: linear-gradient(90deg, var(--gold), transparent); }
+    .watchCard[data-tone="navy"]::before { background: linear-gradient(90deg, var(--navy), transparent); }
+    .watchBar { width: 100%; height: 8px; margin-top: 14px; border-radius: 999px; background: rgba(19, 25, 32, 0.08); overflow: hidden; }
+    .watchBar span { display: block; height: 100%; background: linear-gradient(90deg, var(--red), var(--gold), var(--green)); }
+    .sourceCard[data-tone="red"]::before { background: linear-gradient(90deg, var(--red), transparent); }
+    .sourceCard[data-tone="gold"]::before { background: linear-gradient(90deg, var(--gold), transparent); }
+    .sourceCard[data-tone="navy"]::before { background: linear-gradient(90deg, var(--navy), transparent); }
+    .sourceItems { margin-top: 14px; }
+    .sourceItem { padding: 14px 16px; border: 1px solid var(--line); border-radius: 22px; background: rgba(255, 253, 248, 0.92); }
+    .sourceItem p, .miniBoard p { margin: 10px 0 0; }
+    .miniBoard { min-height: 230px; }
+    .chipWall { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .footer { margin-top: 22px; padding: 16px 6px 0; color: rgba(19, 25, 32, 0.72); font-size: 13px; line-height: 1.8; }
+    .empty {
+      display: grid; place-items: center; min-height: 220px; padding: 18px; border: 1px dashed rgba(19, 25, 32, 0.16); border-radius: 26px;
+      background: rgba(255, 253, 248, 0.78); color: var(--muted); text-align: center; line-height: 1.8;
+    }
+    .error { padding: 18px; border: 1px solid rgba(151, 57, 54, 0.22); border-radius: 20px; background: rgba(151, 57, 54, 0.08); color: var(--red); }
+    @media (max-width: 1180px) { .factStrip, .themeNotes { grid-template-columns: 1fr; } }
+    @media (max-width: 1024px) {
+      .toolbar, .heroLayout, .storiesLayout, .themeLayout, .watchLayout, .sourceLayout, .zeroLayout { grid-template-columns: 1fr; }
+      .toolbar { position: static; align-items: flex-start; }
+      .toolbarMeta { justify-content: flex-start; }
+      .slide { aspect-ratio: auto; min-height: 0; padding: 24px; }
+    }
   </style>
 </head>
 <body>
@@ -41,66 +195,262 @@
     <footer class="footer" id="footer"></footer>
   </div>
   <script>
-    const L={yahoo:"Yahoo",kabutan:"株探",minkabu:"みんかぶ",x:"X",ir:"IR",guide:"Guide",investable:"Theme",backdrop:"Backdrop"},K=/株|銘柄|相場|原油|中東|海運|保険|LNG|資源|FOMC|日銀|金利|首脳|イベント|指数|為替|決算|業績|受注|設備投資|送客|宿泊|旅行|広告|決済|半導体|AI|データセンター|電力|物流|空運|化学|素材|予約|ボラティリティ|船/;
-    const $=i=>document.getElementById(i),s=(v,f="")=>v==null?f:String(v),a=v=>Array.isArray(v)?v:[],e=v=>s(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"),n=v=>s(v).toLowerCase().replace(/[\s　]+/g,"").replace(/[!！?？、。,，．・:：/／\\\-→]/g,""),u=(list,k)=>{const m=new Set(),r=[];list.forEach(x=>{const key=k(x);if(key&&!m.has(key)){m.add(key);r.push(x)}});return r},clip=(v,l=80)=>{const c=Array.from(s(v));return c.length>l?c.slice(0,l).join("")+"…":c.join("")},label=x=>L[s(x).toLowerCase()]||s(x,"Source"),jp=(v,o={month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})=>{if(!v)return"";const d=new Date(v);return Number.isNaN(d.getTime())?s(v):new Intl.DateTimeFormat("ja-JP",{timeZone:"Asia/Tokyo",...o}).format(d)},full=v=>jp(v,{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
-    const lines=(t,c=11,m=3)=>{const x=Array.from(s(t));if(!x.length)return[];const r=[];while(x.length&&r.length<m)r.push(x.splice(0,c).join(""));if(x.length&&r.length)r[r.length-1]=clip(r[r.length-1]+x.join(""),c);return r};
-    const svgText=(x,y,t,o={})=>lines(t,o.c||11,o.m||3).map((ln,i)=>`<text x="${x}" y="${y+i*(o.h||((o.s||15)+4))}" text-anchor="${o.a||"middle"}" font-size="${o.s||15}" font-weight="${o.w||700}" fill="${o.f||"#10161b"}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${e(ln)}</text>`).join("");
-    const normNews=(x,f={})=>({source:s(x.source,f.source||""),headline:s(x.headline,f.headline||""),summary:s(x.summary||x.why,f.summary||""),why:s(x.why,f.why||""),url:s(x.url,f.url||""),timestamp:s(x.timestamp,f.timestamp||""),role:s(x.role,f.role||""),theme:s(x.theme,f.theme||"")});
-    const cat=x=>{const t=`${s(x.headline)} ${s(x.summary)} ${s(x.why)} ${s(x.theme)}`;if(/原油|中東|LNG|海運|資源|保険/.test(t))return"資源・エネルギー";if(/FOMC|日銀|金利|首脳|イベント|ボラティリティ/.test(t))return"政策イベント";if(/決算|業績|上方|下方|IR|受注/.test(t))return"決算・IR";if(/旅行|宿泊|予約|送客|広告|決済/.test(t))return"周辺消費";return x.source==="x"?"仮説フロー":"市場観測"};
-    const action=x=>{const t=`${s(x.headline)} ${s(x.summary)} ${s(x.why)} ${s(x.theme)}`;if(/警戒|報復|封鎖|緊張|イベント/.test(t))return"寄り前ヘッドライン確認";if(/関連株|注目株|思惑|テーマ/.test(t))return"連想先と出来高を追う";if(/決算|受注|提携|設備投資/.test(t))return"IRの具体化待ち";return"次の一報待ち"};
-    function ctx(data){
-      const themes=u((a(data.investable_themes).length?a(data.investable_themes).map(x=>({...x,kind:"investable"})):a(data.market_backdrop).map(x=>({...x,kind:"backdrop"}))).map(x=>({theme:s(x.theme),why:s(x.why_it_matters),mention:+x.mention_count||0,processes:a(x.beneficiary_processes),news:a(x.news_items),kind:x.kind})),x=>n(x.theme)).slice(0,4);
-      const themeNews=themes.flatMap(t=>a(t.news).map(x=>normNews(x,{role:t.kind==="investable"?"evidence":"backdrop",theme:t.theme})));
-      const sourceNews=a(data.source_list).map(x=>normNews(x,{role:x.role||"evidence"}));
-      const hypo=a(data.hypothesis_sources).filter(x=>K.test(`${s(x.headline)} ${s(x.summary)} ${s(x.why)} ${s(x.theme)}`)).map(x=>normNews(x,{role:"hypothesis"}));
-      const news=u([...themeNews,...sourceNews,...hypo].filter(x=>x.headline),x=>s(x.url).toLowerCase().replace(/[?#].*$/,"")||n(x.headline)).slice(0,8);
-      const watchSeed=[],push=(list,kind)=>a(list).forEach(x=>watchSeed.push({kind,code:s(x.code),name:s(x.name),root:s(x.root_theme),chain:s(x.chain),catalyst:s(x.catalyst),reason:s(x.reasoning),confidence:+x.confidence||0,risk:s(x.risk)}));push(data.direct_picks,"direct");push(data.associative_picks||data.stock_picks,"associate");push(data.watch_candidates,"watch");
-      const watch=u(watchSeed,x=>x.code||n(x.name)).slice(0,4);
-      const boards={sectors:u([...a(data.sector_watch),...a(data.next_check_guidance).flatMap(x=>a(x.sectors))],x=>n(x)).slice(0,10),processes:u([...a(data.process_watch),...themes.flatMap(x=>a(x.processes)),...a(data.next_check_guidance).flatMap(x=>a(x.processes))],x=>n(x)).slice(0,12),checks:u([...a(data.next_checks),...a(data.next_check_guidance).flatMap(x=>a(x.triggers))],x=>n(x)).slice(0,6)};
-      const used=new Set(),key=x=>s(x.url).toLowerCase().replace(/[?#].*$/,"")||n(x.headline),evidence=[],background=[],hypothesis=[];news.forEach(x=>{const k=key(x);if(x.source!=="x"&&k&&!used.has(k)&&evidence.length<3){used.add(k);evidence.push(x)}});a(data.source_list).forEach(x=>{const y=normNews(x,{role:x.role||"backdrop"}),k=key(y);if(k&&!used.has(k)&&background.length<3){used.add(k);background.push(y)}});if(!background.length)a(data.next_check_guidance).forEach(x=>background.length<3&&background.push({source:"guide",headline:s(x.theme),summary:clip(a(x.processes).join(" / "),60),theme:s(x.theme)}));hypo.forEach(x=>{const k=key(x);if(k&&!used.has(k)&&hypothesis.length<3){used.add(k);hypothesis.push(x)}});
-      return{themes,news,watch,boards,buckets:{evidence,background,hypothesis}};
+    const SOURCE_LABELS = { yahoo: "Yahoo", kabutan: "株探", minkabu: "みんかぶ", x: "X", ir: "IR", guide: "Guide" };
+    const HYPOTHESIS_RE = /株|決算|受注|中東|原油|LNG|FOMC|日銀|ドル円|金利|会談|首脳|設備|データセンター|AI|半導体|防衛|電力|化工|プラント/;
+    const $ = (id) => document.getElementById(id);
+    const toStr = (value, fallback = "") => value == null ? fallback : String(value);
+    const asArray = (value) => Array.isArray(value) ? value : [];
+    const escapeHtml = (value) => toStr(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+    const clip = (value, limit = 80) => {
+      const chars = Array.from(toStr(value));
+      return chars.length > limit ? chars.slice(0, limit).join("") + "…" : chars.join("");
+    };
+    const normalizeKey = (value) => toStr(value).toLowerCase().replace(/https?:\/\/\S+/g, "").replace(/[\s　]+/g, "").replace(/[!！?？:：・.,，。\/\\\-_"'`~\[\]()]/g, "");
+    const cleanUrl = (value) => toStr(value).toLowerCase().replace(/[?#].*$/, "");
+    const uniqBy = (list, keyFn) => {
+      const seen = new Set();
+      const result = [];
+      list.forEach((item) => {
+        const key = keyFn(item);
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        result.push(item);
+      });
+      return result;
+    };
+    const label = (source) => SOURCE_LABELS[toStr(source).toLowerCase()] || toStr(source, "Source");
+    const jp = (value, options = { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) => {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return toStr(value);
+      return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", ...options }).format(date);
+    };
+    const full = (value) => jp(value, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    const textLines = (text, charsPerLine = 11, maxLines = 3) => {
+      const chars = Array.from(toStr(text));
+      if (!chars.length) return [];
+      const lines = [];
+      while (chars.length && lines.length < maxLines) lines.push(chars.splice(0, charsPerLine).join(""));
+      if (chars.length && lines.length) lines[lines.length - 1] = clip(lines[lines.length - 1] + chars.join(""), charsPerLine);
+      return lines;
+    };
+    const svgText = (x, y, text, options = {}) => {
+      const lines = textLines(text, options.chars || 11, options.max || 3);
+      return lines.map((line, index) => {
+        const lineHeight = options.lineHeight || ((options.size || 15) + 4);
+        return `<text x="${x}" y="${y + (index * lineHeight)}" text-anchor="${options.anchor || "middle"}" font-size="${options.size || 15}" font-weight="${options.weight || 700}" fill="${options.fill || "#131920"}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${escapeHtml(line)}</text>`;
+      }).join("");
+    };
+    const normNews = (item, fallback = {}) => ({
+      source: toStr(item.source, fallback.source || ""),
+      headline: toStr(item.headline, fallback.headline || ""),
+      summary: toStr(item.summary || item.why, fallback.summary || ""),
+      why: toStr(item.why, fallback.why || ""),
+      url: toStr(item.url, fallback.url || ""),
+      timestamp: toStr(item.timestamp, fallback.timestamp || ""),
+      role: toStr(item.role, fallback.role || ""),
+      theme: toStr(item.theme, fallback.theme || "")
+    });
+    const category = (item) => {
+      const text = `${toStr(item.headline)} ${toStr(item.summary)} ${toStr(item.why)} ${toStr(item.theme)}`;
+      if (/中東|原油|LNG|化工|プラント|エネルギー/.test(text)) return "エネルギー";
+      if (/FOMC|日銀|ドル円|金利|会談|首脳/.test(text)) return "マクロ";
+      if (/決算|IR|受注|提携|設備|工場|会社/.test(text)) return "企業材料";
+      if (/AI|半導体|データセンター|電力/.test(text)) return "設備投資";
+      return item.source === "x" ? "仮説メモ" : "市場ニュース";
+    };
+    const nextAction = (item) => {
+      const text = `${toStr(item.headline)} ${toStr(item.summary)} ${toStr(item.why)} ${toStr(item.theme)}`;
+      if (/受注|工期|工程|契約|採算/.test(text)) return "工程と受注の更新を追う";
+      if (/決算|説明会|IR|開示/.test(text)) return "開示と会社説明を確認";
+      if (/原油|中東|金利|ドル円|FOMC|会談/.test(text)) return "地合いの継続を確認";
+      return "続報を待つ";
+    };
+    const kindTone = (index) => index % 2 === 0 ? "red" : "navy";
+    function ctx(data) {
+      const themeSeed = asArray(data.investable_themes).length ? asArray(data.investable_themes).map((item) => ({ ...item, kind: "investable" })) : asArray(data.market_backdrop).map((item) => ({ ...item, kind: "backdrop" }));
+      const themes = uniqBy(themeSeed.map((item) => ({
+        theme: toStr(item.theme),
+        why: toStr(item.why_it_matters),
+        mention: +item.mention_count || 0,
+        processes: asArray(item.beneficiary_processes),
+        news: asArray(item.news_items),
+        kind: item.kind
+      })), (item) => normalizeKey(item.theme)).slice(0, 4);
+      const themeNews = themes.flatMap((theme) => asArray(theme.news).map((item) => normNews(item, { role: theme.kind === "investable" ? "evidence" : "backdrop", theme: theme.theme })));
+      const sourceNews = asArray(data.source_list).map((item) => normNews(item, { role: item.role || "evidence" }));
+      const hypothesisNews = asArray(data.hypothesis_sources).filter((item) => HYPOTHESIS_RE.test(`${toStr(item.headline)} ${toStr(item.summary)} ${toStr(item.why)} ${toStr(item.theme)}`)).map((item) => normNews(item, { role: "hypothesis" }));
+      const news = uniqBy([...themeNews, ...sourceNews, ...hypothesisNews].filter((item) => item.headline), (item) => cleanUrl(item.url) || normalizeKey(item.headline)).slice(0, 8);
+      const watchSeed = [];
+      const pushWatch = (list, kind) => asArray(list).forEach((item) => watchSeed.push({
+        kind, code: toStr(item.code), name: toStr(item.name), root: toStr(item.root_theme), chain: toStr(item.chain), catalyst: toStr(item.catalyst), reason: toStr(item.reasoning), confidence: +item.confidence || 0, risk: toStr(item.risk)
+      }));
+      pushWatch(data.direct_picks, "direct");
+      pushWatch(data.associative_picks || data.stock_picks, "associate");
+      pushWatch(data.watch_candidates, "watch");
+      const watch = uniqBy(watchSeed, (item) => item.code || normalizeKey(item.name)).slice(0, 4);
+      const boards = {
+        sectors: uniqBy([...asArray(data.sector_watch), ...asArray(data.next_check_guidance).flatMap((item) => asArray(item.sectors))], (item) => normalizeKey(item)).slice(0, 10),
+        processes: uniqBy([...asArray(data.process_watch), ...themes.flatMap((item) => asArray(item.processes)), ...asArray(data.next_check_guidance).flatMap((item) => asArray(item.processes))], (item) => normalizeKey(item)).slice(0, 12),
+        checks: uniqBy([...asArray(data.next_checks), ...asArray(data.next_check_guidance).flatMap((item) => asArray(item.triggers))], (item) => normalizeKey(item)).slice(0, 6)
+      };
+      const used = new Set();
+      const keyOf = (item) => cleanUrl(item.url) || normalizeKey(item.headline);
+      const evidence = [];
+      const background = [];
+      const hypothesis = [];
+      news.forEach((item) => {
+        const key = keyOf(item);
+        if (item.source === "x" || !key || used.has(key) || evidence.length >= 3) return;
+        used.add(key);
+        evidence.push(item);
+      });
+      asArray(data.source_list).forEach((item) => {
+        const newsItem = normNews(item, { role: item.role || "backdrop" });
+        const key = keyOf(newsItem);
+        if (!key || used.has(key) || background.length >= 3) return;
+        used.add(key);
+        background.push(newsItem);
+      });
+      if (!background.length) {
+        asArray(data.next_check_guidance).forEach((item) => {
+          if (background.length >= 3) return;
+          background.push({ source: "guide", headline: toStr(item.theme), summary: clip(asArray(item.processes).join(" / "), 60), theme: toStr(item.theme) });
+        });
+      }
+      hypothesisNews.forEach((item) => {
+        const key = keyOf(item);
+        if (!key || used.has(key) || hypothesis.length >= 3) return;
+        used.add(key);
+        hypothesis.push(item);
+      });
+      return { themes, news, watch, boards, buckets: { evidence, background, hypothesis } };
     }
-    const head=(no,labelTxt,titleTxt,descTxt)=>`<div class="head"><div><p class="eyebrow">${e(labelTxt)}</p><h2 class="title">${e(titleTxt)}</h2>${descTxt?`<p class="desc">${e(descTxt)}</p>`:""}</div><div class="no">${e(no)}<br>SLIDE</div></div>`;
-    function heroSvg(t,lead,b,w){
-      if(!t)return`<div class="empty">テーマ取得待ちです。ニュースが入るとここが主役スライドになります。</div>`;
-      const proc=a(t.processes).slice(0,3).map((x,i)=>{const y=108+i*92,c=i===0?"#8a2c2c":"#1a3954",f=i===0?"rgba(138,44,44,.12)":"rgba(26,57,84,.1)";return`<path d="M240 194 C300 194, 298 ${y+6}, 356 ${y+6}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><rect x="356" y="${y-22}" width="180" height="52" rx="20" fill="${f}" stroke="${c}" stroke-width="1.5"/>${svgText(446,y+2,x,{c:11,m:2,s:14,h:16})}`}).join("");
-      const checks=b.checks.slice(0,3).map((x,i)=>{const p=28+i*188;return`<rect x="${p}" y="360" width="172" height="32" rx="16" fill="rgba(255,253,247,.92)" stroke="rgba(16,22,27,.14)"/>${svgText(p+86,380,x,{c:15,m:1,s:12,h:14})}`}).join("");
-      const picks=w.slice(0,2).map((x,i)=>{const p=360+i*118;return`<rect x="${p}" y="26" width="102" height="30" rx="15" fill="rgba(255,253,247,.92)" stroke="rgba(16,22,27,.14)"/>${svgText(p+51,46,`${x.code} ${x.name}`,{c:10,m:1,s:11,h:12})}`}).join("");
-      return`<div class="visual"><svg viewBox="0 0 560 410" role="img" aria-label="今日の主役テーマ"><rect x="1" y="1" width="558" height="408" rx="28" fill="rgba(255,253,247,.96)" stroke="rgba(16,22,27,.14)"/><rect x="26" y="24" width="122" height="32" rx="16" fill="rgba(26,57,84,.12)" stroke="#1a3954"/>${svgText(87,45,label(lead?lead.source:t.kind),{c:10,m:1,s:12})}${picks}<circle cx="168" cy="194" r="96" fill="rgba(138,44,44,.12)" stroke="#8a2c2c" stroke-width="2.2"/><circle cx="168" cy="194" r="58" fill="rgba(255,253,247,.96)" stroke="rgba(16,22,27,.14)"/>${svgText(168,168,t.theme,{c:10,m:4,s:16,h:18})}${proc}${checks}</svg><p class="caption">中央が主役、右が波及先、下が朝イチで見るトリガーです。</p></div>`;
+    const head = (no, labelText, titleText, descText) => `<div class="head"><div><p class="eyebrow">${escapeHtml(labelText)}</p><h2 class="title">${escapeHtml(titleText)}</h2>${descText ? `<p class="desc">${escapeHtml(descText)}</p>` : ""}</div><div class="no">${escapeHtml(no)}<br>SLIDE</div></div>`;
+    const metaTag = (text, tone = "") => `<span class="tag ${tone}">${escapeHtml(text)}</span>`;
+
+    function heroFigure(theme, lead, boards, watch) {
+      if (!theme) return `<div class="empty">主役テーマがまだありません。ここは朝の読み筋を大きく図で置く場所です。</div>`;
+      const processCards = asArray(theme.processes).slice(0, 4).map((item, index) => {
+        const y = 110 + (index * 82);
+        const tone = index % 2 === 0 ? { stroke: "#973936", fill: "rgba(151,57,54,.11)" } : { stroke: "#1d4162", fill: "rgba(29,65,98,.1)" };
+        return `<path d="M270 212 C338 212, 352 ${y + 6}, 418 ${y + 6}" fill="none" stroke="${tone.stroke}" stroke-width="3" stroke-linecap="round"/><rect x="418" y="${y - 24}" width="230" height="56" rx="22" fill="${tone.fill}" stroke="${tone.stroke}" stroke-width="1.6"/>${svgText(533, y + 4, item, { chars: 13, max: 2, size: 14, lineHeight: 16 })}`;
+      }).join("");
+      const checkCards = boards.checks.slice(0, 3).map((item, index) => {
+        const x = 34 + (index * 214);
+        return `<rect x="${x}" y="438" width="192" height="40" rx="20" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.14)"/>${svgText(x + 96, 462, item, { chars: 15, max: 1, size: 12 })}`;
+      }).join("");
+      const watchCards = watch.slice(0, 2).map((item, index) => {
+        const x = 470 + (index * 116);
+        return `<rect x="${x}" y="28" width="102" height="34" rx="17" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.14)"/>${svgText(x + 51, 49, `${item.code} ${item.name}`, { chars: 10, max: 1, size: 11 })}`;
+      }).join("");
+      return `<div class="figurePanel"><svg viewBox="0 0 760 520" role="img" aria-label="今日の主役テーマと波及先"><defs><radialGradient id="heroGlow" cx="50%" cy="42%" r="58%"><stop offset="0%" stop-color="rgba(151,57,54,.18)"/><stop offset="100%" stop-color="rgba(151,57,54,0)"/></radialGradient></defs><rect x="1" y="1" width="758" height="518" rx="34" fill="rgba(255,253,248,.98)" stroke="rgba(19,25,32,.14)"/><circle cx="206" cy="212" r="150" fill="url(#heroGlow)"/><rect x="26" y="28" width="138" height="34" rx="17" fill="rgba(29,65,98,.12)" stroke="#1d4162"/>${svgText(95, 49, label(lead ? lead.source : "guide"), { chars: 12, max: 1, size: 12 })}${watchCards}<circle cx="206" cy="212" r="112" fill="rgba(151,57,54,.12)" stroke="#973936" stroke-width="2.4"/><circle cx="206" cy="212" r="72" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.15)"/>${svgText(206, 182, theme.theme, { chars: 9, max: 4, size: 18, lineHeight: 19 })}<rect x="82" y="340" width="248" height="56" rx="22" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.14)"/>${svgText(206, 364, clip((lead && lead.headline) || theme.why || "材料整理中です。", 28), { chars: 18, max: 2, size: 14, lineHeight: 16 })}${processCards}${checkCards}</svg><p class="figureNote">中央を主役テーマ、その右を波及工程、下を今日確認したいトリガーとして一枚に置いています。</p></div>`;
     }
-    function themeSvg(ts){
-      if(!ts.length)return`<div class="empty">テーマがまだありません。</div>`;
-      const mx=Math.max(...ts.map(x=>x.mention),1),pos=[[120,108],[470,104],[150,286],[450,290]],nodes=ts.slice(0,4).map((x,i)=>{const [px,py]=pos[i],r=40+Math.round((x.mention/mx)*22),c=i%2===0?"#8a2c2c":"#1a3954",f=i%2===0?"rgba(138,44,44,.12)":"rgba(26,57,84,.12)";return`<path d="M300 192 C${px+24} 192, ${px} ${py}, ${px} ${py}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><circle cx="${px}" cy="${py}" r="${r}" fill="${f}" stroke="${c}" stroke-width="2"/>${svgText(px,py-8,x.theme,{c:9,m:3,s:13,h:15})}<rect x="${px-32}" y="${py+r-3}" width="64" height="24" rx="12" fill="rgba(255,253,247,.94)" stroke="rgba(16,22,27,.12)"/><text x="${px}" y="${py+r+13}" text-anchor="middle" font-size="12" font-weight="700" fill="${c}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${e(`${x.mention}件`)}</text>`}).join("");
-      return`<div class="visual"><svg viewBox="0 0 600 390" role="img" aria-label="今日の市場地図"><rect x="1" y="1" width="598" height="388" rx="28" fill="rgba(255,253,247,.96)" stroke="rgba(16,22,27,.14)"/><circle cx="300" cy="192" r="78" fill="rgba(16,22,27,.04)" stroke="rgba(16,22,27,.14)" stroke-dasharray="5 8"/><circle cx="300" cy="192" r="50" fill="rgba(255,253,247,.96)" stroke="#10161b" stroke-width="1.8"/>${svgText(300,181,"今日の",{c:6,m:1,s:14,h:16})}${svgText(300,201,"市場地図",{c:6,m:1,s:16,h:18})}${nodes}</svg><p class="caption">円の大きさは言及量、線は今日つながって見える論点です。</p></div>`;
+
+    function storyFigure(item, index, featured) {
+      const accent = index % 2 === 0 ? { stroke: "#973936", fill: "rgba(151,57,54,.12)", soft: "rgba(151,57,54,.06)" } : { stroke: "#1d4162", fill: "rgba(29,65,98,.12)", soft: "rgba(29,65,98,.06)" };
+      const width = 620;
+      const height = featured ? 286 : 230;
+      const themeLabel = clip(item.theme || category(item), 18);
+      const actionLabel = clip(nextAction(item), 16);
+      return `<div class="storyVisual"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="ニュースの論点図"><rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="28" fill="rgba(255,253,248,.98)" stroke="rgba(19,25,32,.12)"/><circle cx="${featured ? 110 : 92}" cy="${featured ? 88 : 76}" r="${featured ? 74 : 60}" fill="${accent.fill}"/><text x="${featured ? 110 : 92}" y="${featured ? 98 : 84}" text-anchor="middle" font-size="${featured ? 54 : 42}" font-weight="800" fill="rgba(19,25,32,.14)" font-family="Shippori Mincho, serif">0${index + 1}</text><rect x="${featured ? 200 : 164}" y="36" width="${featured ? 134 : 120}" height="30" rx="15" fill="${accent.fill}" stroke="${accent.stroke}"/>${svgText(featured ? 267 : 224, 56, label(item.source), { chars: 10, max: 1, size: 11 })}<path d="M${featured ? 144 : 120} ${featured ? 146 : 126} C${featured ? 208 : 182} ${featured ? 146 : 126}, ${featured ? 232 : 210} ${featured ? 146 : 126}, ${featured ? 282 : 250} ${featured ? 146 : 126}" fill="none" stroke="${accent.stroke}" stroke-width="3" stroke-linecap="round"/><rect x="${featured ? 282 : 250}" y="${featured ? 122 : 104}" width="${featured ? 194 : 164}" height="${featured ? 48 : 42}" rx="21" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.12)"/>${svgText(featured ? 379 : 332, featured ? 144 : 126, themeLabel, { chars: 12, max: 1, size: featured ? 14 : 13 })}<rect x="${featured ? 468 : 428}" y="${featured ? 122 : 104}" width="${featured ? 118 : 106}" height="${featured ? 48 : 42}" rx="21" fill="${accent.soft}" stroke="${accent.stroke}"/>${svgText(featured ? 527 : 481, featured ? 144 : 126, actionLabel, { chars: 10, max: 2, size: 12, lineHeight: 13 })}<rect x="36" y="${featured ? 198 : 160}" width="${width - 72}" height="${featured ? 58 : 50}" rx="25" fill="rgba(255,253,248,.92)" stroke="rgba(19,25,32,.12)"/>${svgText(width / 2, featured ? 222 : 190, clip(category(item), 20), { chars: 14, max: 1, size: featured ? 15 : 14 })}</svg></div>`;
     }
-    const storyMini=(x,i)=>{const stroke=i%2===0?"#8f3432":"#1f405f",fill=i%2===0?"rgba(143,52,50,.12)":"rgba(31,64,95,.12)";return`<div class="miniGraphic"><svg viewBox="0 0 320 120" role="img" aria-label="ニュースの関係図"><rect x="1" y="1" width="318" height="118" rx="20" fill="rgba(255,253,247,.96)" stroke="rgba(20,25,31,.12)"/><rect x="18" y="20" width="72" height="24" rx="12" fill="${fill}" stroke="${stroke}"/>${svgText(54,37,label(x.source),{c:8,m:1,s:11})}<path d="M92 32 C122 32, 134 32, 160 32" fill="none" stroke="${stroke}" stroke-width="2.4" stroke-linecap="round"/><rect x="160" y="18" width="140" height="28" rx="14" fill="rgba(255,253,247,.94)" stroke="rgba(20,25,31,.12)"/>${svgText(230,36,x.theme||cat(x),{c:13,m:1,s:11})}<rect x="20" y="62" width="132" height="34" rx="17" fill="rgba(255,253,247,.94)" stroke="rgba(20,25,31,.12)"/>${svgText(86,83,cat(x),{c:10,m:1,s:11})}<rect x="168" y="62" width="132" height="34" rx="17" fill="rgba(255,253,247,.94)" stroke="rgba(20,25,31,.12)"/>${svgText(234,83,action(x),{c:12,m:1,s:11})}</svg></div>`};
-    function watchSvg(items){
-      if(!items.length)return`<div class="empty">候補がまだありません。0件日でも次の昇格条件を追うボードとして使います。</div>`;
-      const dots=items.map((x,i)=>{const conf=Math.max(1,Math.min(5,+x.confidence||3)),px=110+(conf-1)*104+(i%2)*8,py=x.kind==="direct"?118:x.kind==="associate"?198:286-(i%2)*12,c=x.kind==="direct"?"#8a2c2c":x.kind==="associate"?"#ae8440":"#1a3954",f=x.kind==="direct"?"rgba(138,44,44,.14)":x.kind==="associate"?"rgba(174,132,64,.15)":"rgba(26,57,84,.12)",r=x.kind==="direct"?36:x.kind==="associate"?32:28;return`<circle cx="${px}" cy="${py}" r="${r}" fill="${f}" stroke="${c}" stroke-width="2"/>${svgText(px,py-4,x.code||x.name,{c:6,m:1,s:13,h:15})}${svgText(px,py+14,clip(x.name,7),{c:7,m:1,s:11,h:12,w:500})}`}).join("");
-      return`<div class="matrix"><svg viewBox="0 0 600 380" role="img" aria-label="候補のポジションマップ"><rect x="1" y="1" width="598" height="378" rx="28" fill="rgba(255,253,247,.96)" stroke="rgba(16,22,27,.14)"/><line x1="86" y1="320" x2="542" y2="320" stroke="rgba(16,22,27,.25)" stroke-width="1.6"/><line x1="86" y1="66" x2="86" y2="320" stroke="rgba(16,22,27,.25)" stroke-width="1.6"/><text x="82" y="98" text-anchor="end" font-size="12" fill="#5e6872" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">即反応</text><text x="82" y="206" text-anchor="end" font-size="12" fill="#5e6872" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">中継ぎ</text><text x="82" y="298" text-anchor="end" font-size="12" fill="#5e6872" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">先回り</text><text x="314" y="364" text-anchor="middle" font-size="12" fill="#5e6872" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">右ほど確度が高い</text>${dots}</svg><p class="caption">横軸は確度、縦軸は今すぐ反応するか先回りかをざっくり置いています。</p></div>`;
+
+    function themeFigure(themes) {
+      if (!themes.length) return `<div class="empty">テーマがまだありません。</div>`;
+      const positions = [[148, 122], [596, 116], [180, 336], [564, 324]];
+      const maxMention = Math.max(...themes.map((item) => item.mention), 1);
+      const nodes = themes.slice(0, 4).map((item, index) => {
+        const [x, y] = positions[index];
+        const radius = 48 + Math.round((item.mention / maxMention) * 24);
+        const tone = index % 2 === 0 ? { stroke: "#973936", fill: "rgba(151,57,54,.12)" } : { stroke: "#1d4162", fill: "rgba(29,65,98,.12)" };
+        return `<path d="M380 224 C${x + 24} 224, ${x} ${y}, ${x} ${y}" fill="none" stroke="${tone.stroke}" stroke-width="3" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="${radius}" fill="${tone.fill}" stroke="${tone.stroke}" stroke-width="2.2"/>${svgText(x, y - 8, item.theme, { chars: 9, max: 3, size: 14, lineHeight: 16 })}<rect x="${x - 36}" y="${y + radius - 4}" width="72" height="26" rx="13" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.12)"/><text x="${x}" y="${y + radius + 14}" text-anchor="middle" font-size="12" font-weight="700" fill="${tone.stroke}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${escapeHtml(`${item.mention}件`)}</text>`;
+      }).join("");
+      const bars = themes.slice(0, 4).map((item, index) => {
+        const width = 118 + Math.round((item.mention / maxMention) * 78);
+        const x = 54 + (index * 170);
+        const tone = index % 2 === 0 ? "#973936" : "#1d4162";
+        return `<rect x="${x}" y="404" width="${width}" height="18" rx="9" fill="${tone}" opacity="0.78"/><text x="${x}" y="398" font-size="12" fill="#67717d" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${escapeHtml(clip(item.theme, 10))}</text>`;
+      }).join("");
+      return `<div class="figurePanel"><svg viewBox="0 0 760 450" role="img" aria-label="今日のテーマ相関図"><rect x="1" y="1" width="758" height="448" rx="34" fill="rgba(255,253,248,.98)" stroke="rgba(19,25,32,.14)"/><circle cx="380" cy="224" r="108" fill="rgba(19,25,32,.04)" stroke="rgba(19,25,32,.14)" stroke-dasharray="7 10"/><circle cx="380" cy="224" r="66" fill="rgba(255,253,248,.96)" stroke="#131920" stroke-width="1.8"/>${svgText(380, 212, "今日の", { chars: 6, max: 1, size: 15 })}${svgText(380, 232, "テーマ地図", { chars: 6, max: 1, size: 18 })}${nodes}${bars}</svg><p class="figureNote">円の大きさは言及量、下の帯は朝刊の中でどのテーマが前面に出ているかの強さです。</p></div>`;
     }
-    const bridgeSvg=()=>`<div class="bridge"><svg viewBox="0 0 1200 110" role="img" aria-label="情報レイヤーの関係"><rect x="1" y="1" width="1198" height="108" rx="28" fill="rgba(255,253,247,.56)" stroke="rgba(16,22,27,.1)"/><rect x="70" y="28" width="220" height="54" rx="22" fill="rgba(138,44,44,.12)" stroke="#8a2c2c"/><text x="180" y="61" text-anchor="middle" font-size="18" font-weight="700" fill="#8a2c2c" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">根拠源</text><path d="M290 55 C388 55, 416 55, 510 55" fill="none" stroke="#ae8440" stroke-width="3" stroke-linecap="round"/><rect x="510" y="28" width="220" height="54" rx="22" fill="rgba(174,132,64,.14)" stroke="#ae8440"/><text x="620" y="61" text-anchor="middle" font-size="18" font-weight="700" fill="#ae8440" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">背景源</text><path d="M730 55 C826 55, 854 55, 948 55" fill="none" stroke="#1a3954" stroke-width="3" stroke-linecap="round"/><rect x="948" y="28" width="180" height="54" rx="22" fill="rgba(26,57,84,.12)" stroke="#1a3954"/><text x="1038" y="61" text-anchor="middle" font-size="18" font-weight="700" fill="#1a3954" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">仮説源</text></svg></div>`;
-    const toolbar=(d,c)=>`<div class="toolbar"><div class="brand"><p class="eyebrow">GitHub Pages Morning Edition</p><h1>株クラ朝刊 Slides</h1><p>NotebookLM のように、短文と図で読む朝の slide deck に切り替えています。</p></div><div class="toolbar-meta"><span class="meta">${e(full(d.analysis_date))} JST</span><span class="meta">ニュース ${e(c.news.length)} 件</span><span class="meta">テーマ ${e(c.themes.length)} 件</span><a class="link" href="./latest-analysis-full.md" target="_blank" rel="noopener noreferrer">Markdown</a><a class="link" href="./latest-analysis-full.json" target="_blank" rel="noopener noreferrer">JSON</a></div></div>`;
-    const insight=(k,v,note,t)=>`<article class="card insight ${t}"><p class="eyebrow">${e(k)}</p><strong>${e(v)}</strong>${note?`<p class="body">${e(note)}</p>`:""}</article>`;
-    const themeCard=(x,i)=>`<article class="themeCard" data-no="0${i+1}"><div class="tags"><span class="tag ${i%2===0?"redTag":"navyTag"}">Theme ${i+1}</span><span class="tag ${x.kind==="investable"?"greenTag":"goldTag"}">${e(x.kind==="investable"?"本命テーマ":"背景テーマ")}</span><span class="tag">${e(`${x.mention}件`)}</span></div><strong style="display:block;margin-top:12px;max-width:15ch;">${e(x.theme)}</strong><p class="body" style="max-width:30ch;">${e(clip(x.why||"要点整理中",86))}</p><div class="chips" style="margin-top:14px;">${a(x.processes).slice(0,3).map(p=>`<span class="chip ${i%2===0?"redTag":"navyTag"}">${e(p)}</span>`).join("")}</div>${a(x.news).length?`<p class="small" style="margin-top:16px;">参照: ${e(clip(a(x.news)[0].headline,42))}</p>`:`<p class="small" style="margin-top:16px;">参照ニュース整理中</p>`}</article>`;
-    const storyCard=(x,i,f=false)=>`<article class="storyCard ${f?"feature":""}"><div class="storyHead"><span class="storyIndex">#${i+1}</span><span class="tag redTag">${e(label(x.source))}</span><span class="tag ${x.role==="hypothesis"?"navyTag":"goldTag"}">${e(cat(x))}</span>${x.timestamp?`<span class="tag">${e(jp(x.timestamp))}</span>`:""}</div><h3 class="storyTitle">${x.url?`<a href="${e(x.url)}" target="_blank" rel="noopener noreferrer">${e(x.headline)}</a>`:e(x.headline)}</h3><p class="summary">${e(clip(x.summary||x.why||"要点整理中",f?118:84))}</p>${storyMini(x,i)}<div class="flow"><span class="chip redTag">${e(label(x.source))}</span><span class="dot">→</span><span class="chip navyTag">${e(clip(x.theme||cat(x),18))}</span><span class="dot">→</span><span class="chip greenTag">${e(action(x))}</span></div></article>`;
-    const cand=(x)=>{const w=Math.max(12,Math.min(100,(+x.confidence||0)*20)),k=x.kind==="direct"?"redTag":x.kind==="associate"?"goldTag":"navyTag",m=x.kind==="direct"?"本命":x.kind==="associate"?"中継ぎ":"監視",kindClass=x.kind==="direct"?"watchDirect":x.kind==="associate"?"watchAssociate":"watchWatch";return`<article class="cand ${kindClass}"><div class="candHead"><span class="tag ${k}">${e(m)}</span><span class="tag">${e(x.code)}</span><span class="tag">確度 ${e(x.confidence||0)}</span></div><strong style="display:block;margin-top:12px;">${e(x.name)}</strong><p class="body">${e(clip(x.reason||x.chain||"つながり整理中",84))}</p>${x.catalyst?`<p class="small" style="margin-top:10px;">昇格条件: ${e(clip(x.catalyst,50))}</p>`:""}${x.risk?`<p class="small">弱さ: ${e(clip(x.risk,46))}</p>`:""}<div class="bar"><span style="width:${w}%"></span></div></article>`};
-    const column=(title,sub,items,tone)=>`<section class="col ${tone==="redTag"?"sourceRed":tone==="goldTag"?"sourceGold":"sourceNavy"}"><div class="sourceTop"><div><p class="eyebrow">${e(sub)}</p><h3>${e(title)}</h3></div><div class="sourceStat">${e(items.length)}</div></div><div class="layerStack">${items.length?items.map(x=>`<article class="layerCard" style="border:1px solid var(--line);background:rgba(255,253,247,.92)"><div class="layerHead"><span class="tag ${tone}">${e(label(x.source))}</span>${x.timestamp?`<span class="tag">${e(jp(x.timestamp))}</span>`:""}</div><strong style="display:block;margin-top:10px;">${x.url?`<a href="${e(x.url)}" target="_blank" rel="noopener noreferrer">${e(clip(x.headline,42))}</a>`:e(clip(x.headline,42))}</strong><p class="small">${e(clip(x.summary||x.theme||"整理中",72))}</p></article>`).join(""):`<div class="empty">まだ並べる情報がありません。</div>`}</div></section>`;
-    const check=(x,i)=>`<article class="card"><span class="tag ${i%2===0?"redTag":"navyTag"}">Check ${i+1}</span><strong style="display:block;margin-top:10px;">${e(x)}</strong></article>`;
-    function render(data){
-      const c=ctx(data),t=c.themes[0],lead=c.news[0],news=c.news.slice(0,3),topWatch=c.watch[0];
-      $("masthead").innerHTML=toolbar(data,c);
-      $("deck").innerHTML=[
-        `<section class="slide cover">${head("01","Front Page","今日の結論","一枚目だけで、今日の読み筋と監視候補の強弱がつかめるようにしています。")}<div class="grid heroGrid"><div><div class="quote"><p class="eyebrow">Today in one sentence</p><h3>${e(clip(data.market_sentiment||(t?t.why:"材料整理中です。"),92))}</h3></div><div class="heroRibbon">${t?`<span class="tag redTag">${e(t.theme)}</span>`:""}${lead?`<span class="tag navyTag">${e(label(lead.source))}</span>`:""}${topWatch?`<span class="tag greenTag">${e(`${topWatch.code} ${topWatch.name}`)}</span>`:""}${c.boards.checks[0]?`<span class="tag goldTag">${e(clip(c.boards.checks[0],18))}</span>`:""}</div><div class="heroNote"><p class="eyebrow">Morning angle</p><p class="body">${e(clip((lead&&lead.summary)||(t&&t.why)||"材料整理中です。",84))}</p></div><div class="metrics"><article class="metric"><span>主役テーマ</span><strong>${e(c.themes.length)}</strong></article><article class="metric"><span>監視候補</span><strong>${e(c.watch.length)}</strong></article><article class="metric"><span>確認トリガー</span><strong>${e(c.boards.checks.length)}</strong></article></div><div class="insights">${insight("主役テーマ",t?t.theme:"整理中",t?clip(t.why,62):"テーマ取得待ち","toneR")}${insight("主役ニュース",lead?clip(lead.headline,28):"整理中",lead?clip(lead.summary||lead.why,62):"ニュース取得待ち","toneN")}${insight("注視候補",topWatch?`${topWatch.code} ${topWatch.name}`:"候補なし",topWatch?clip(topWatch.catalyst||topWatch.reason,62):"0件日は昇格条件を追跡","toneG")}</div></div><div>${heroSvg(t,lead,c.boards,c.watch)}</div></div></section>`,
-        `<section class="slide ink">${head("02","Theme Atlas","今日の市場地図","何が主役で、どこへ波及するかを 4 テーマ以内に圧縮しています。")}<div class="grid"><div>${themeSvg(c.themes)}</div><div class="themeGrid">${c.themes.length?c.themes.map(themeCard).join(""):`<div class="empty">テーマがまだありません。</div>`}</div></div></section>`,
-        `<section class="slide red">${head("03","News Storyboard","主要ニュース","見出し一覧ではなく、起点から次に見るポイントまでを 1 ニュース 1 スライド感で並べています。")}${news.length?`<div class="storyGrid"><div>${storyCard(news[0],0,true)}</div><div class="stack">${news.slice(1).map((x,i)=>storyCard(x,i+1)).join("")}</div></div>`:`<div class="empty">表示できるニュースがありません。</div>`}</section>`,
-        `<section class="slide green">${head("04","Watch Board","本命候補 / 監視候補","確度と時間軸で置き直し、いま見る候補と先回りで見る候補を分けています。")}<div class="watchGrid"><div>${watchSvg(c.watch)}</div><div class="stack">${c.watch.length?c.watch.map(cand).join(""):`<div class="empty">候補がまだありません。</div>`}</div></div></section>`,
-        `<section class="slide ink">${head("05","Source Layers","根拠源 / 背景源 / 仮説源","どの材料を判断の土台にして、何を地合いとして扱い、何を仮説に留めるかを分離しています。")}${bridgeSvg()}<div class="layers sourceDeck">${column("根拠源","Primary",c.buckets.evidence,"redTag")}${column("背景源","Backdrop",c.buckets.background,"goldTag")}${column("仮説源","Hypothesis",c.buckets.hypothesis,"navyTag")}</div></section>`,
-        `<section class="slide cover">${head("06","Zero-Day Board","0件日でも見るボード","候補が薄い日でも、注視業種・工程・昇格条件までを一枚に置いて次の材料を待てるようにしています。")}<div class="decisionGrid"><section class="board"><p class="eyebrow">Watch Sectors</p><h3>注視業種 / 注視工程</h3><div class="chips" style="margin-top:16px;">${c.boards.sectors.length?c.boards.sectors.map(x=>`<span class="chip redTag">${e(x)}</span>`).join(""):'<span class="chip">業種整理中</span>'}</div><div class="chips" style="margin-top:14px;">${c.boards.processes.length?c.boards.processes.map(x=>`<span class="chip navyTag">${e(x)}</span>`).join(""):'<span class="chip">工程整理中</span>'}</div><p class="small" style="margin-top:18px;">テーマが 0 件の日でも、このボードだけで次の昇格条件を追跡できます。</p></section><section class="board"><p class="eyebrow">Promotion Checks</p><h3>昇格条件 / 次に確認</h3><div class="checks">${c.boards.checks.length?c.boards.checks.map(check).join(""):'<div class="empty">次チェック整理中</div>'}</div><div class="footer-links"><a class="link" href="./latest-analysis-full.md" target="_blank" rel="noopener noreferrer">Markdown を開く</a><a class="link" href="./latest-analysis-full.json" target="_blank" rel="noopener noreferrer">JSON を開く</a></div></section></div></section>`
+
+    function watchFigure(items) {
+      if (!items.length) return `<div class="empty">候補がまだありません。0件日でも次の昇格条件を追うボードとして使います。</div>`;
+      const dots = items.map((item, index) => {
+        const confidence = Math.max(1, Math.min(5, +item.confidence || 3));
+        const x = 132 + ((confidence - 1) * 116) + ((index % 2) * 8);
+        const y = item.kind === "direct" ? 122 : item.kind === "associate" ? 214 : 304 - ((index % 2) * 10);
+        const tone = item.kind === "direct" ? { stroke: "#973936", fill: "rgba(151,57,54,.14)", radius: 38 } : item.kind === "associate" ? { stroke: "#aa8450", fill: "rgba(170,132,80,.16)", radius: 34 } : { stroke: "#1d4162", fill: "rgba(29,65,98,.13)", radius: 30 };
+        return `<circle cx="${x}" cy="${y}" r="${tone.radius}" fill="${tone.fill}" stroke="${tone.stroke}" stroke-width="2"/>${svgText(x, y - 5, item.code || item.name, { chars: 6, max: 1, size: 13, lineHeight: 15 })}${svgText(x, y + 16, clip(item.name, 7), { chars: 7, max: 1, size: 11, lineHeight: 12, weight: 500 })}`;
+      }).join("");
+      return `<div class="figurePanel"><svg viewBox="0 0 760 430" role="img" aria-label="候補のポジションマップ"><rect x="1" y="1" width="758" height="428" rx="34" fill="rgba(255,253,248,.98)" stroke="rgba(19,25,32,.14)"/><rect x="110" y="72" width="560" height="92" rx="28" fill="rgba(151,57,54,.06)"/><rect x="110" y="176" width="560" height="92" rx="28" fill="rgba(170,132,80,.08)"/><rect x="110" y="280" width="560" height="92" rx="28" fill="rgba(29,65,98,.06)"/><line x1="110" y1="372" x2="670" y2="372" stroke="rgba(19,25,32,.24)" stroke-width="1.8"/><line x1="110" y1="72" x2="110" y2="372" stroke="rgba(19,25,32,.24)" stroke-width="1.8"/><text x="102" y="122" text-anchor="end" font-size="12" fill="#67717d" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">即反応</text><text x="102" y="214" text-anchor="end" font-size="12" fill="#67717d" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">中継ぎ</text><text x="102" y="314" text-anchor="end" font-size="12" fill="#67717d" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">先回り</text><text x="390" y="404" text-anchor="middle" font-size="12" fill="#67717d" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">右ほど確度が高い</text>${dots}</svg><p class="figureNote">縦軸を時間軸、横軸を確度として置き、今すぐ追う候補と先回りで見る候補を分けています。</p></div>`;
+    }
+
+    function sourceFigure(buckets) {
+      const evidence = buckets.evidence[0];
+      const background = buckets.background[0];
+      const hypothesis = buckets.hypothesis[0];
+      return `<div class="figurePanel"><svg viewBox="0 0 760 470" role="img" aria-label="根拠源と背景源と仮説源の層"><rect x="1" y="1" width="758" height="468" rx="34" fill="rgba(255,253,248,.98)" stroke="rgba(19,25,32,.14)"/><path d="M68 116 C180 74, 520 74, 688 124 L688 196 C522 168, 206 176, 68 214 Z" fill="rgba(151,57,54,.13)" stroke="#973936" stroke-width="2"/><path d="M92 214 C214 182, 550 190, 678 234 L678 304 C532 280, 226 288, 92 324 Z" fill="rgba(170,132,80,.15)" stroke="#aa8450" stroke-width="2"/><path d="M118 318 C250 290, 562 304, 652 338 L652 408 C540 392, 278 394, 118 426 Z" fill="rgba(29,65,98,.12)" stroke="#1d4162" stroke-width="2"/><text x="136" y="138" font-size="26" font-weight="800" fill="#973936" font-family="Shippori Mincho, serif">根拠源</text><text x="160" y="236" font-size="26" font-weight="800" fill="#aa8450" font-family="Shippori Mincho, serif">背景源</text><text x="186" y="340" font-size="26" font-weight="800" fill="#1d4162" font-family="Shippori Mincho, serif">仮説源</text>${svgText(550, 136, evidence ? clip(evidence.headline, 24) : "主要ニュースなし", { chars: 16, max: 2, size: 14, lineHeight: 16 })}${svgText(540, 238, background ? clip(background.headline, 24) : "地合い整理中", { chars: 16, max: 2, size: 14, lineHeight: 16 })}${svgText(520, 342, hypothesis ? clip(hypothesis.headline, 24) : "仮説整理中", { chars: 16, max: 2, size: 14, lineHeight: 16 })}<rect x="72" y="54" width="120" height="36" rx="18" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.14)"/><rect x="72" y="152" width="120" height="36" rx="18" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.14)"/><rect x="72" y="254" width="120" height="36" rx="18" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.14)"/>${svgText(132, 77, `${buckets.evidence.length}件`, { chars: 10, max: 1, size: 13 })}${svgText(132, 175, `${buckets.background.length}件`, { chars: 10, max: 1, size: 13 })}${svgText(132, 277, `${buckets.hypothesis.length}件`, { chars: 10, max: 1, size: 13 })}</svg><p class="figureNote">根拠を上、地合いを中、仮説を下に積んで、判断の重さを見分けやすくしています。</p></div>`;
+    }
+
+    function zeroDayFigure(boards) {
+      const sectors = boards.sectors.slice(0, 3);
+      const processes = boards.processes.slice(0, 3);
+      const checks = boards.checks.slice(0, 3);
+      const cardColumn = (items, x, title, tone) => {
+        const stroke = tone === "red" ? "#973936" : tone === "gold" ? "#aa8450" : "#1d4162";
+        const fill = tone === "red" ? "rgba(151,57,54,.12)" : tone === "gold" ? "rgba(170,132,80,.16)" : "rgba(29,65,98,.12)";
+        return `<rect x="${x}" y="60" width="180" height="52" rx="22" fill="${fill}" stroke="${stroke}"/><text x="${x + 90}" y="92" text-anchor="middle" font-size="20" font-weight="800" fill="${stroke}" font-family="Shippori Mincho, serif">${escapeHtml(title)}</text>${items.map((item, index) => `<rect x="${x}" y="${142 + (index * 82)}" width="180" height="50" rx="20" fill="rgba(255,253,248,.96)" stroke="rgba(19,25,32,.12)"/>${svgText(x + 90, 172 + (index * 82), item, { chars: 12, max: 2, size: 13, lineHeight: 14 })}`).join("")}`;
+      };
+      return `<div class="figurePanel"><svg viewBox="0 0 760 440" role="img" aria-label="0件日の確認フロー"><rect x="1" y="1" width="758" height="438" rx="34" fill="rgba(255,253,248,.98)" stroke="rgba(19,25,32,.14)"/>${cardColumn(sectors.length ? sectors : ["業種整理中"], 64, "注視業種", "red")}${cardColumn(processes.length ? processes : ["工程整理中"], 292, "注視工程", "gold")}${cardColumn(checks.length ? checks : ["次チェック整理中"], 520, "昇格条件", "navy")}<path d="M244 246 C268 246, 280 246, 292 246" fill="none" stroke="#aa8450" stroke-width="3.2" stroke-linecap="round"/><path d="M472 246 C494 246, 504 246, 520 246" fill="none" stroke="#1d4162" stroke-width="3.2" stroke-linecap="round"/></svg><p class="figureNote">材料が薄い日は、業種 → 工程 → 昇格条件の順で待ち伏せポイントを固定します。</p></div>`;
+    }
+
+    const toolbar = (data, context) => `<div class="toolbar"><div class="brand"><p class="eyebrow">GitHub Pages Morning Edition</p><h1>株クラ朝刊 Slides</h1><p>NotebookLM のように、見出しの束ではなく、図で要点が入る朝の slide deck に寄せています。</p></div><div class="toolbarMeta"><span class="meta">${escapeHtml(full(data.analysis_date))} JST</span><span class="meta">ニュース ${escapeHtml(context.news.length)} 件</span><span class="meta">テーマ ${escapeHtml(context.themes.length)} 件</span><a class="link" href="./latest-analysis-full.md" target="_blank" rel="noopener noreferrer">Markdown</a><a class="link" href="./latest-analysis-full.json" target="_blank" rel="noopener noreferrer">JSON</a></div></div>`;
+
+    const themeNote = (item, index) => `<article class="noteCard" data-no="0${index + 1}" data-tone="${kindTone(index)}"><div class="noteHead"><div><p class="eyebrow">Theme ${index + 1}</p><h3 class="panelTitle">${escapeHtml(item.theme)}</h3></div><div class="mentionStat">${escapeHtml(item.mention)}</div></div><p class="bodyCopy">${escapeHtml(clip(item.why || "要点整理中です。", 92))}</p><div class="chips">${asArray(item.processes).slice(0, 3).map((process) => metaTag(process, index % 2 === 0 ? "redTag" : "navyTag")).join("")}</div>${asArray(item.news).length ? `<p class="miniCopy">参照: ${escapeHtml(clip(asArray(item.news)[0].headline, 46))}</p>` : `<p class="miniCopy">参照ニュース整理中</p>`}</article>`;
+
+    const watchCard = (item) => {
+      const tone = item.kind === "direct" ? "red" : item.kind === "associate" ? "gold" : "navy";
+      const toneTag = item.kind === "direct" ? "redTag" : item.kind === "associate" ? "goldTag" : "navyTag";
+      const labelText = item.kind === "direct" ? "本命" : item.kind === "associate" ? "中継ぎ" : "監視";
+      const width = Math.max(12, Math.min(100, (+item.confidence || 0) * 20));
+      return `<article class="watchCard" data-tone="${tone}"><div class="storyMeta">${metaTag(labelText, toneTag)}${metaTag(item.code || "code")}${metaTag(`確度 ${item.confidence || 0}`)}</div><strong>${escapeHtml(item.name)}</strong><p class="bodyCopy">${escapeHtml(clip(item.reason || item.chain || "つながり整理中です。", 88))}</p>${item.catalyst ? `<p class="miniCopy">昇格条件: ${escapeHtml(clip(item.catalyst, 56))}</p>` : ""}${item.risk ? `<p class="miniCopy">弱さ: ${escapeHtml(clip(item.risk, 52))}</p>` : ""}<div class="watchBar"><span style="width:${width}%"></span></div></article>`;
+    };
+
+    const sourceCard = (title, subtitle, items, tone) => `<section class="sourceCard" data-tone="${tone}"><div class="sourceHead"><div><p class="eyebrow">${escapeHtml(subtitle)}</p><h3 class="sourceTitle">${escapeHtml(title)}</h3></div><div class="mentionStat">${escapeHtml(items.length)}</div></div><div class="sourceItems">${items.length ? items.slice(0, 2).map((item) => `<article class="sourceItem"><div class="storyMeta">${metaTag(label(item.source), tone === "red" ? "redTag" : tone === "gold" ? "goldTag" : "navyTag")}${item.timestamp ? metaTag(jp(item.timestamp)) : ""}</div><strong>${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(clip(item.headline, 44))}</a>` : escapeHtml(clip(item.headline, 44))}</strong><p class="miniCopy">${escapeHtml(clip(item.summary || item.theme || "整理中です。", 82))}</p></article>`).join("") : `<div class="empty">まだ並べる情報がありません。</div>`}</div></section>`;
+
+    const storyPoster = (item, index, featured = false) => `<article class="storyPoster ${featured ? "featured" : ""}"><div class="storyMeta">${metaTag(`#${index + 1}`, "redTag")}${metaTag(label(item.source), index % 2 === 0 ? "redTag" : "navyTag")}${metaTag(category(item), item.role === "hypothesis" ? "navyTag" : "goldTag")}${item.timestamp ? metaTag(jp(item.timestamp)) : ""}</div>${storyFigure(item, index, featured)}<h3 class="storyTitle">${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.headline)}</a>` : escapeHtml(item.headline)}</h3><p class="storySummary">${escapeHtml(clip(item.summary || item.why || "要点整理中です。", featured ? 118 : 90))}</p><div class="storyFlow">${metaTag(label(item.source), "redTag")}<span class="flowDot">→</span>${metaTag(clip(item.theme || category(item), 18), "navyTag")}<span class="flowDot">→</span>${metaTag(clip(nextAction(item), 18), "greenTag")}</div></article>`;
+
+    function render(data) {
+      const context = ctx(data);
+      const topTheme = context.themes[0];
+      const lead = context.news[0];
+      const stories = context.news.slice(0, 3);
+      const topWatch = context.watch[0];
+      $("masthead").innerHTML = toolbar(data, context);
+      $("deck").innerHTML = [
+        `<section class="slide cover">${head("01", "Front Page", "今日の結論", "一枚目はニュースの要点ではなく、ニュースがどこへ波及するかを一枚絵で掴む面です。")}<div class="heroLayout"><section class="leadPanel"><p class="eyebrow">Morning Thesis</p><h3 class="heroHeadline">${escapeHtml(topTheme ? topTheme.theme : "材料整理中")}</h3><p class="heroSentence">${escapeHtml(clip((lead && `${lead.headline}。${lead.summary || lead.why}`) || data.market_sentiment || (topTheme && topTheme.why) || "ニュースの要点を整理中です。", 124))}</p><div class="tagRow">${topTheme ? metaTag(topTheme.theme, "redTag") : ""}${lead ? metaTag(label(lead.source), "navyTag") : ""}${topWatch ? metaTag(`${topWatch.code} ${topWatch.name}`, "greenTag") : ""}${context.boards.checks[0] ? metaTag(clip(context.boards.checks[0], 18), "goldTag") : ""}</div><div class="heroTicker"><article class="tickerCard"><p class="eyebrow">Lead Story</p><strong>${escapeHtml(clip((lead && lead.headline) || "主要ニュース整理中", 42))}</strong></article><article class="tickerCard"><p class="eyebrow">Next Watch</p><strong>${escapeHtml(clip((topWatch && (topWatch.catalyst || topWatch.reason)) || "次の昇格条件を整理中です。", 40))}</strong></article></div><div class="factStrip"><article class="factCard"><span>主役テーマ</span><strong>${escapeHtml(context.themes.length)}</strong></article><article class="factCard"><span>監視候補</span><strong>${escapeHtml(context.watch.length)}</strong></article><article class="factCard"><span>確認トリガー</span><strong>${escapeHtml(context.boards.checks.length)}</strong></article></div><div class="heroAgenda"><p class="eyebrow">Why It Matters</p><strong>${escapeHtml(lead ? clip(lead.headline, 34) : "材料整理中")}</strong><p class="bodyCopy">${escapeHtml(clip((topTheme && topTheme.why) || (lead && lead.summary) || "ここは朝の一言メモを置く場所です。", 88))}</p></div></section><div>${heroFigure(topTheme, lead, context.boards, context.watch)}</div></div></section>`,
+        `<section class="slide red">${head("02", "News Storyboard", "主要ニュース", "見出しの羅列ではなく、起点から次に見るポイントまでをポスターのように並べています。")}${stories.length ? `<div class="storiesLayout"><div>${storyPoster(stories[0], 0, true)}</div><div class="storyStack">${stories.slice(1).map((item, index) => storyPoster(item, index + 1)).join("")}</div></div>` : `<div class="empty">表示できるニュースがありません。</div>`}</section>`,
+        `<section class="slide ink">${head("03", "Theme Atlas", "今日の市場地図", "何が主役で、どこへ波及するかを 4 テーマ以内に圧縮して、右側に注釈カードを添えています。")}<div class="themeLayout"><div>${themeFigure(context.themes)}</div><div class="themeNotes">${context.themes.length ? context.themes.map(themeNote).join("") : `<div class="empty">テーマがまだありません。</div>`}</div></div></section>`,
+        `<section class="slide green">${head("04", "Watch Board", "本命候補 / 監視候補", "確度と時間軸で置き直し、いま見る候補と先回りで見る候補を分けています。")}<div class="watchLayout"><div>${watchFigure(context.watch)}</div><div class="watchStack">${context.watch.length ? context.watch.map(watchCard).join("") : `<div class="empty">候補がまだありません。</div>`}</div></div></section>`,
+        `<section class="slide ink">${head("05", "Source Layers", "根拠源 / 背景源 / 仮説源", "ニュースの重さを見分けるために、判断の土台・地合い・仮説を別の層として見せています。")}<div class="sourceLayout"><div>${sourceFigure(context.buckets)}</div><div class="sourceShelf">${sourceCard("根拠源", "Primary", context.buckets.evidence, "red")}${sourceCard("背景源", "Backdrop", context.buckets.background, "gold")}${sourceCard("仮説源", "Hypothesis", context.buckets.hypothesis, "navy")}</div></div></section>`,
+        `<section class="slide cover">${head("06", "Zero-Day Board", "0件日でも見るボード", "材料が薄い日でも、注視業種・工程・昇格条件の順で待ち伏せできるようにしています。")}<div class="zeroLayout"><div>${zeroDayFigure(context.boards)}</div><div class="boardStack"><section class="miniBoard"><p class="eyebrow">Watch Sectors</p><h3 class="boardTitle">注視業種 / 注視工程</h3><div class="chipWall">${context.boards.sectors.length ? context.boards.sectors.map((item) => metaTag(item, "redTag")).join("") : metaTag("業種整理中")}</div><div class="chipWall">${context.boards.processes.length ? context.boards.processes.map((item) => metaTag(item, "navyTag")).join("") : metaTag("工程整理中")}</div><p class="miniCopy">テーマが 0 件の日でも、この面だけで次の昇格条件を追跡できます。</p></section><section class="miniBoard"><p class="eyebrow">Promotion Checks</p><h3 class="boardTitle">昇格条件 / 次に確認</h3><div class="sourceItems">${context.boards.checks.length ? context.boards.checks.slice(0, 4).map((item, index) => `<article class="sourceItem">${metaTag(`Check ${index + 1}`, index % 2 === 0 ? "redTag" : "navyTag")}<strong>${escapeHtml(item)}</strong></article>`).join("") : `<div class="empty">次チェック整理中</div>`}</div><div class="footerLinks"><a class="link" href="./latest-analysis-full.md" target="_blank" rel="noopener noreferrer">Markdown を開く</a><a class="link" href="./latest-analysis-full.json" target="_blank" rel="noopener noreferrer">JSON を開く</a></div></section></div></div></section>`
       ].join("");
-      $("footer").innerHTML=`最終更新: ${e(full(data.analysis_date))} JST / 公開ファイル: latest-analysis-full.md / latest-analysis-full.json`;
+      $("footer").innerHTML = `最終更新: ${escapeHtml(full(data.analysis_date))} JST / 公開ファイル: latest-analysis-full.md / latest-analysis-full.json`;
     }
-    fetch("./latest-analysis-full.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json()}).then(render).catch(err=>{$("masthead").innerHTML="";$("deck").innerHTML=`<div class="error">latest-analysis-full.json の読み込みに失敗しました: ${e(err.message)}</div>`;$("footer").innerHTML=""});
+
+    fetch("./latest-analysis-full.json", { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(render)
+      .catch((error) => {
+        $("masthead").innerHTML = "";
+        $("deck").innerHTML = `<div class="error">latest-analysis-full.json の読み込みに失敗しました: ${escapeHtml(error.message)}</div>`;
+        $("footer").innerHTML = "";
+      });
   </script>
 </body>
 </html>
