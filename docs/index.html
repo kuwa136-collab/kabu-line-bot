@@ -196,6 +196,45 @@
       background: linear-gradient(180deg, rgba(155, 28, 28, 0.05), rgba(155, 28, 28, 0.01));
     }
 
+    .art-shell,
+    .atlas-shell,
+    .flow-art {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .art-shell {
+      padding: 12px;
+      background: radial-gradient(circle at top left, rgba(155, 28, 28, 0.18), rgba(255, 253, 248, 0.94) 48%);
+    }
+
+    .atlas-shell {
+      margin-top: 14px;
+      padding: 12px;
+      background: radial-gradient(circle at center, rgba(29, 62, 99, 0.14), rgba(255, 253, 248, 0.98) 55%);
+    }
+
+    .flow-art {
+      padding: 10px;
+      background: linear-gradient(180deg, rgba(47, 92, 80, 0.15), rgba(255, 253, 248, 0.98));
+    }
+
+    .art-shell svg,
+    .atlas-shell svg,
+    .flow-art svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .art-caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
     .story p,
     .memo p,
     .theme-box p {
@@ -222,6 +261,19 @@
       justify-content: space-between;
       gap: 10px 14px;
       align-items: flex-start;
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .legend-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.95);
+      padding: 10px 12px;
     }
 
     .meter {
@@ -293,17 +345,55 @@
     }
 
     .story-list {
-      gap: 12px;
+      gap: 16px;
     }
 
     .story-item {
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 253, 248, 0.99), rgba(246, 242, 234, 0.9));
     }
 
-    .story-item:last-child {
-      padding-bottom: 0;
-      border-bottom: 0;
+    .story-poster {
+      display: grid;
+      grid-template-columns: minmax(0, 280px) 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .story-scene {
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: radial-gradient(circle at top left, rgba(29, 62, 99, 0.15), rgba(255, 253, 248, 0.98) 54%);
+    }
+
+    .story-scene svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .story-copy {
+      display: grid;
+      gap: 10px;
+    }
+
+    .story-ribbon {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .story-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid rgba(23, 27, 32, 0.14);
+      background: rgba(255, 253, 248, 0.92);
+      font-size: 12px;
+      color: var(--muted);
     }
 
     .story-meta {
@@ -348,6 +438,14 @@
 
     .ref-chip:hover {
       border-color: var(--navy);
+    }
+
+    .svg-eyebrow {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .story-link {
@@ -410,6 +508,8 @@
     @media (max-width: 980px) {
       .hero,
       .brief-grid,
+      .legend-grid,
+      .story-poster,
       .theme-grid,
       .two-col {
         grid-template-columns: 1fr;
@@ -572,6 +672,156 @@
         : `<div class="empty">${esc(emptyText)}</div>`;
     }
 
+    function wrapSvgLines(text, charsPerLine = 12, maxLines = 3) {
+      const source = safe(text, "");
+      if (!source) return [];
+      const chars = Array.from(source);
+      const lines = [];
+      while (chars.length && lines.length < maxLines) {
+        lines.push(chars.splice(0, charsPerLine).join(""));
+      }
+      if (chars.length && lines.length) {
+        const remain = chars.join("");
+        lines[lines.length - 1] = clip(lines[lines.length - 1] + remain, charsPerLine);
+      }
+      return lines;
+    }
+
+    function renderSvgTextBlock(x, y, text, options = {}) {
+      const lines = wrapSvgLines(text, options.charsPerLine || 12, options.maxLines || 3);
+      const fill = options.fill || "#171b20";
+      const size = options.size || 15;
+      const weight = options.weight || 700;
+      const lineHeight = options.lineHeight || (size + 5);
+      const anchor = options.anchor || "middle";
+      return lines.map((line, index) => `
+        <text x="${x}" y="${y + (index * lineHeight)}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${fill}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${esc(line)}</text>
+      `).join("");
+    }
+
+    function renderLeadIllustration(lead, checks) {
+      if (!lead) return "";
+
+      const processes = arr(lead.processes).slice(0, 3);
+      const guidePills = uniq(arr(checks), (item) => norm(item)).slice(0, 3);
+      const nodeY = [72, 136, 200];
+      const processNodes = (processes.length ? processes : ["注視工程を整理中", "追加根拠待ち", sourceLabel(lead.source)])
+        .slice(0, 3)
+        .map((label, index) => {
+          const y = nodeY[index];
+          return `
+            <path d="M240 ${132 + (index - 1) * 18} C300 ${132 + (index - 1) * 18}, 330 ${y + 8}, 392 ${y + 8}" fill="none" stroke="${index === 0 ? "#9b1c1c" : "#1d3e63"}" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="392" y="${y - 18}" width="180" height="44" rx="18" fill="${index === 0 ? "rgba(155,28,28,0.12)" : "rgba(29,62,99,0.1)"}" stroke="${index === 0 ? "#9b1c1c" : "#1d3e63"}" stroke-width="1.4"/>
+            ${renderSvgTextBlock(482, y + 1, label, { charsPerLine: 11, maxLines: 2, size: 14, lineHeight: 16 })}
+          `;
+        }).join("");
+      const guideNodes = guidePills.map((label, index) => {
+        const x = 38 + (index * 184);
+        return `
+          <rect x="${x}" y="228" width="162" height="28" rx="14" fill="rgba(255,253,248,0.86)" stroke="rgba(23,27,32,0.16)"/>
+          ${renderSvgTextBlock(x + 81, 247, label, { charsPerLine: 14, maxLines: 1, size: 12, lineHeight: 14 })}
+        `;
+      }).join("");
+
+      return `
+        <div class="art-shell">
+          <svg viewBox="0 0 620 270" role="img" aria-label="今日の主役テーマの図解">
+            <defs>
+              <linearGradient id="leadPanel" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(255,253,248,0.98)"/>
+                <stop offset="100%" stop-color="rgba(246,242,234,0.96)"/>
+              </linearGradient>
+            </defs>
+            <rect x="1" y="1" width="618" height="268" rx="24" fill="url(#leadPanel)" stroke="rgba(23,27,32,0.14)"/>
+            <circle cx="165" cy="132" r="78" fill="rgba(155,28,28,0.14)" stroke="#9b1c1c" stroke-width="2"/>
+            <circle cx="165" cy="132" r="44" fill="rgba(255,253,248,0.96)" stroke="rgba(23,27,32,0.14)"/>
+            ${renderSvgTextBlock(165, 118, lead.theme || "今日の論点", { charsPerLine: 10, maxLines: 4, size: 15, lineHeight: 17 })}
+            <rect x="34" y="28" width="152" height="28" rx="14" fill="rgba(29,62,99,0.14)"/>
+            ${renderSvgTextBlock(110, 47, sourceLabel(lead.source), { charsPerLine: 10, maxLines: 1, size: 12, lineHeight: 14 })}
+            ${processNodes}
+            ${guideNodes}
+          </svg>
+          <p class="art-caption">左の大円が今日の主役テーマ、右のノードが波及先、下の帯が朝イチ確認です。</p>
+        </div>
+      `;
+    }
+
+    function storyCategoryLabel(item) {
+      const text = `${safe(item.headline, "")} ${safe(item.summary, "")} ${safe(item.why, "")} ${safe(item.theme, "")}`;
+      if (/原油|中東|海運|保険|LNG|資源/.test(text)) return "資源・エネルギー";
+      if (/FOMC|日銀|金利|首脳|イベント|指標/.test(text)) return "政策イベント";
+      if (/決算|業績|上方|下方|IR/.test(text)) return "決算・IR";
+      if (/半導体|AI|データセンター|電力/.test(text)) return "成長テーマ";
+      if (item.source === "x") return "仮説フロー";
+      return "市場観測";
+    }
+
+    function storyActionLabel(item) {
+      const text = `${safe(item.headline, "")} ${safe(item.summary, "")} ${safe(item.why, "")} ${safe(item.theme, "")}`;
+      if (/警戒|緊張|報復|封鎖|イベント/.test(text)) return "寄り前ヘッドライン";
+      if (/注目株|関連株|テーマ|思惑/.test(text)) return "連想先と出来高";
+      if (/決算|上方|下方|受注|提携|設備投資/.test(text)) return "IRの具体化確認";
+      return "次の一報待ち";
+    }
+
+    function renderStoryPoster(item, index) {
+      const source = sourceLabel(item.source);
+      const category = storyCategoryLabel(item);
+      const action = storyActionLabel(item);
+      const theme = safe(item.theme, category);
+      const summary = clip(item.summary || item.why || "要点整理中", 52);
+      const palette = index % 2 === 0
+        ? {
+            stroke: "#9b1c1c",
+            soft: "rgba(155,28,28,0.12)",
+            deep: "rgba(155,28,28,0.18)",
+          }
+        : {
+            stroke: "#1d3e63",
+            soft: "rgba(29,62,99,0.12)",
+            deep: "rgba(29,62,99,0.18)",
+          };
+
+      return `
+        <div class="story-poster">
+          <div class="story-scene">
+            <svg viewBox="0 0 280 252" role="img" aria-label="ニュースを図解したカード">
+              <rect x="1" y="1" width="278" height="250" rx="22" fill="rgba(255,253,248,0.96)" stroke="rgba(23,27,32,0.14)"/>
+              <rect x="20" y="18" width="92" height="28" rx="14" fill="${palette.soft}" stroke="${palette.stroke}"/>
+              ${renderSvgTextBlock(66, 37, source, { charsPerLine: 8, maxLines: 1, size: 12, lineHeight: 14 })}
+              <circle cx="74" cy="100" r="40" fill="${palette.deep}" stroke="${palette.stroke}" stroke-width="1.8"/>
+              <circle cx="74" cy="100" r="22" fill="rgba(255,253,248,0.95)" stroke="rgba(23,27,32,0.14)"/>
+              <text x="74" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="${palette.stroke}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">Story</text>
+              <text x="74" y="111" text-anchor="middle" font-size="20" font-weight="700" fill="${palette.stroke}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">#${index + 2}</text>
+              <path d="M114 100 C138 100, 146 82, 164 82" fill="none" stroke="${palette.stroke}" stroke-width="2.5" stroke-linecap="round"/>
+              <rect x="158" y="48" width="100" height="68" rx="18" fill="${palette.soft}" stroke="${palette.stroke}" stroke-width="1.4"/>
+              ${renderSvgTextBlock(208, 71, theme, { charsPerLine: 7, maxLines: 3, size: 13, lineHeight: 14 })}
+              <rect x="26" y="146" width="228" height="58" rx="18" fill="rgba(255,253,248,0.95)" stroke="rgba(23,27,32,0.14)"/>
+              ${renderSvgTextBlock(140, 168, summary, { charsPerLine: 18, maxLines: 3, size: 12, lineHeight: 13 })}
+              <rect x="24" y="214" width="74" height="22" rx="11" fill="rgba(255,253,248,0.95)" stroke="rgba(23,27,32,0.12)"/>
+              ${renderSvgTextBlock(61, 228, category, { charsPerLine: 9, maxLines: 1, size: 11, lineHeight: 12 })}
+              <rect x="106" y="214" width="148" height="22" rx="11" fill="rgba(255,253,248,0.95)" stroke="rgba(23,27,32,0.12)"/>
+              ${renderSvgTextBlock(180, 228, action, { charsPerLine: 13, maxLines: 1, size: 11, lineHeight: 12 })}
+            </svg>
+          </div>
+          <div class="story-copy">
+            <div class="story-meta">
+              <span class="badge red">#${index + 2}</span>
+              <span class="badge">${esc(source)}</span>
+              <span class="small">${item.timestamp ? esc(jpTime(item.timestamp)) : "日時不明"}</span>
+            </div>
+            <h4>${item.url ? `<a class="story-link" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.headline)}</a>` : esc(item.headline)}</h4>
+            <p class="body">${esc(item.summary || item.why || "要点整理中")}</p>
+            <div class="story-ribbon">
+              <span class="story-pill">分類: ${esc(category)}</span>
+              <span class="story-pill">論点: ${esc(clip(theme, 28))}</span>
+              <span class="story-pill">次: ${esc(action)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     function sourceDesk(data) {
       const seeded = [];
       arr(data.source_list).forEach((item) => seeded.push(item));
@@ -653,6 +903,7 @@
               <p class="body"><strong>関連テーマ:</strong> ${esc(lead.theme)}</p>
               ${lead.processes.length ? `<p class="body"><strong>注視工程:</strong> ${esc(lead.processes.slice(0, 3).join(" / "))}</p>` : ""}
             </div>
+            ${renderLeadIllustration(lead, checks)}
           </article>
         `
         : `
@@ -701,21 +952,11 @@
         </div>
         ${stories.length ? `
           <div class="story-list">
-            ${stories.map((item, index) => {
-              const storyNumber = index + 2;
-              return `
-                <article class="story-item" id="story-${storyNumber}">
-                  <div class="story-meta">
-                    <span class="badge red">#${storyNumber}</span>
-                    <span class="badge">${esc(sourceLabel(item.source))}</span>
-                    <span class="small">${item.timestamp ? esc(jpTime(item.timestamp)) : "日時不明"}</span>
-                  </div>
-                  <h4>${item.url ? `<a class="story-link" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.headline)}</a>` : esc(item.headline)}</h4>
-                  <p class="body">${esc(item.summary || item.why || "要点整理なし")}</p>
-                  <p class="small">関連テーマ: ${esc(item.theme || "未整理")}</p>
-                </article>
-              `;
-            }).join("")}
+            ${stories.map((item, index) => `
+              <article class="story-item" id="story-${index + 2}">
+                ${renderStoryPoster(item, index)}
+              </article>
+            `).join("")}
           </div>
         ` : '<div class="empty">一面トップ以外の主要ニュースはまだありません。</div>'}
       `;
@@ -732,7 +973,17 @@
       const nodes = uniq(
         [entry.rootTheme, ...arr(entry.steps), entry.target],
         (item) => norm(item)
-      ).slice(0, 5);
+      ).slice(0, 4);
+      const xStep = nodes.length > 1 ? 280 / (nodes.length - 1) : 0;
+      const svgNodes = nodes.map((node, index) => {
+        const x = 24 + (index * xStep);
+        const y = index % 2 === 0 ? 56 : 104;
+        return `
+          ${index < nodes.length - 1 ? `<path d="M${x + 84} ${y + 22} C${x + 108} ${y + 22}, ${x + 124} ${index % 2 === 0 ? 126 : 78}, ${x + 148} ${index % 2 === 0 ? 126 : 78}" fill="none" stroke="#9b1c1c" stroke-width="2.5" stroke-linecap="round"/>` : ""}
+          <rect x="${x}" y="${y}" width="92" height="44" rx="16" fill="rgba(255,253,248,0.94)" stroke="${index === nodes.length - 1 ? "#9b1c1c" : "rgba(29,62,99,0.36)"}" stroke-width="${index === nodes.length - 1 ? "1.8" : "1.2"}"/>
+          ${renderSvgTextBlock(x + 46, y + 19, node, { charsPerLine: 8, maxLines: 2, size: 12, lineHeight: 13 })}
+        `;
+      }).join("");
 
       return `
         <article class="flow-card">
@@ -740,15 +991,58 @@
             <span class="badge ${entry.kind === "watch" ? "green" : "navy"}">${esc(entry.kind === "watch" ? "監視フロー" : "本命フロー")}</span>
           </div>
           <h4 style="margin-top:10px;">${esc(entry.title)}</h4>
-          <div class="flow-lane">
-            ${nodes.map((node, index) => `
-              ${index ? '<span class="flow-arrow">→</span>' : ""}
-              <div class="flow-node">${esc(clip(node, 46))}</div>
-            `).join("")}
+          <div class="flow-art">
+            <svg viewBox="0 0 360 170" role="img" aria-label="テーマから銘柄までの流れ">
+              <rect x="1" y="1" width="358" height="168" rx="22" fill="rgba(255,253,248,0.92)" stroke="rgba(23,27,32,0.14)"/>
+              <circle cx="326" cy="30" r="13" fill="rgba(155,28,28,0.14)" stroke="#9b1c1c"/>
+              <text x="326" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#9b1c1c" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${esc(entry.kind === "watch" ? "W" : "P")}</text>
+              ${svgNodes}
+            </svg>
           </div>
           <p class="small"><strong>次に見る:</strong> ${esc(clip(entry.note, 84))}</p>
           ${entry.risk ? `<p class="small"><strong>弱さ:</strong> ${esc(clip(entry.risk, 84))}</p>` : ""}
         </article>
+      `;
+    }
+
+    function renderThemeAtlasSvg(themes) {
+      const mentionMax = Math.max(...themes.map((theme) => Number(theme.mention_count) || 0), 1);
+      const positions = [
+        { x: 120, y: 110 },
+        { x: 490, y: 100 },
+        { x: 150, y: 280 },
+        { x: 470, y: 278 },
+      ];
+
+      const themeNodes = themes.slice(0, 4).map((theme, index) => {
+        const pos = positions[index] || positions[positions.length - 1];
+        const radius = 36 + Math.round(((Number(theme.mention_count) || 0) / mentionMax) * 22);
+        const stroke = index % 2 === 0 ? "#9b1c1c" : "#1d3e63";
+        const fill = index % 2 === 0 ? "rgba(155,28,28,0.12)" : "rgba(29,62,99,0.12)";
+        return `
+          <path d="M320 180 C${pos.x + 24} 180, ${pos.x} ${pos.y}, ${pos.x} ${pos.y}" fill="none" stroke="${stroke}" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="${pos.x}" cy="${pos.y}" r="${radius}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+          ${renderSvgTextBlock(pos.x, pos.y - 6, theme.theme, { charsPerLine: 9, maxLines: 3, size: 13, lineHeight: 14 })}
+          <rect x="${pos.x - 32}" y="${pos.y + radius - 4}" width="64" height="24" rx="12" fill="rgba(255,253,248,0.92)" stroke="rgba(23,27,32,0.12)"/>
+          <text x="${pos.x}" y="${pos.y + radius + 12}" text-anchor="middle" font-size="12" font-weight="700" fill="${stroke}" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">${esc(`${theme.mention_count}件`)}</text>
+        `;
+      }).join("");
+
+      return `
+        <svg viewBox="0 0 620 380" role="img" aria-label="今日の市場地図">
+          <defs>
+            <radialGradient id="atlasCore" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="rgba(255,253,248,0.98)"/>
+              <stop offset="100%" stop-color="rgba(246,242,234,0.94)"/>
+            </radialGradient>
+          </defs>
+          <rect x="1" y="1" width="618" height="378" rx="26" fill="url(#atlasCore)" stroke="rgba(23,27,32,0.14)"/>
+          <circle cx="310" cy="188" r="74" fill="rgba(23,27,32,0.04)" stroke="rgba(23,27,32,0.16)" stroke-dasharray="5 8"/>
+          <circle cx="310" cy="188" r="48" fill="rgba(255,253,248,0.96)" stroke="#171b20" stroke-width="1.8"/>
+          ${renderSvgTextBlock(310, 176, "今日の市場地図", { charsPerLine: 10, maxLines: 2, size: 16, lineHeight: 18 })}
+          ${themeNodes}
+          <text x="310" y="338" text-anchor="middle" font-size="12" fill="#5f6770" font-family="BIZ UDPGothic, Yu Gothic, sans-serif">円の大きさは mention_count、線は今日つながって見える論点です</text>
+        </svg>
       `;
     }
 
@@ -791,27 +1085,31 @@
         </div>
         <div class="brief-grid">
           <div class="signal-stack">
-            ${themes.length ? themes.map((theme, index) => {
-              const meter = Math.max(22, Math.round(((Number(theme.mention_count) || 0) / mentionMax) * 100));
-              return `
-                <article class="signal-card">
-                  <div class="signal-head">
-                    <div>
-                      <p class="label">Theme ${index + 1}</p>
-                      <h4>${esc(theme.theme)}</h4>
-                    </div>
-                    <span class="badge ${index === 0 ? "red" : "navy"}">${esc(`${theme.mention_count}件`)}</span>
-                  </div>
-                  <p class="body">${esc(clip(theme.why_it_matters || "要点整理中", 120))}</p>
-                  <div class="meter"><div class="meter-fill" style="width:${meter}%"></div></div>
-                  ${arr(theme.beneficiary_processes).length ? `<div class="chip-row">${arr(theme.beneficiary_processes).slice(0, 3).map((item) => `<span class="mini-chip">${esc(item)}</span>`).join("")}</div>` : ""}
-                  <div class="card" style="margin-top:12px;">
-                    <p class="label">Story Ref</p>
-                    ${renderStoryRefList(theme.news_items, newsIndex)}
-                  </div>
-                </article>
-              `;
-            }).join("") : '<div class="empty">図解に使えるテーマがまだありません。</div>'}
+            ${themes.length ? `
+              <article class="signal-card">
+                <p class="svg-eyebrow">Theme Atlas</p>
+                <h4>今日の市場地図</h4>
+                <div class="atlas-shell">${renderThemeAtlasSvg(themes)}</div>
+                <div class="legend-grid">
+                  ${themes.map((theme, index) => {
+                    const meter = Math.max(22, Math.round(((Number(theme.mention_count) || 0) / mentionMax) * 100));
+                    return `
+                      <article class="legend-card">
+                        <div class="signal-head">
+                          <p class="label">Theme ${index + 1}</p>
+                          <span class="badge ${index === 0 ? "red" : "navy"}">${esc(`${theme.mention_count}件`)}</span>
+                        </div>
+                        <p><strong>${esc(theme.theme)}</strong></p>
+                        <p class="body">${esc(clip(theme.why_it_matters || "要点整理中", 90))}</p>
+                        <div class="meter"><div class="meter-fill" style="width:${meter}%"></div></div>
+                        ${arr(theme.beneficiary_processes).length ? `<div class="chip-row">${arr(theme.beneficiary_processes).slice(0, 3).map((item) => `<span class="mini-chip">${esc(item)}</span>`).join("")}</div>` : ""}
+                        ${renderStoryRefList(theme.news_items, newsIndex)}
+                      </article>
+                    `;
+                  }).join("")}
+                </div>
+              </article>
+            ` : '<div class="empty">図解に使えるテーマがまだありません。</div>'}
           </div>
           <div class="flow-stack">
             ${flows.map((entry) => renderFlowCard(entry)).join("")}
