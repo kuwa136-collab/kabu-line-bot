@@ -162,6 +162,18 @@
       gap: 18px;
     }
 
+    .brief-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 16px;
+    }
+
+    .signal-stack,
+    .flow-stack {
+      display: grid;
+      gap: 12px;
+    }
+
     .card,
     .story,
     .memo,
@@ -188,6 +200,83 @@
     .memo p,
     .theme-box p {
       margin-top: 10px;
+    }
+
+    .signal-card,
+    .flow-card {
+      border: 1px solid var(--line);
+      padding: 16px 18px;
+    }
+
+    .signal-card {
+      background: linear-gradient(180deg, rgba(29, 62, 99, 0.08), rgba(255, 253, 248, 0.96));
+    }
+
+    .flow-card {
+      background: linear-gradient(180deg, rgba(47, 92, 80, 0.1), rgba(255, 253, 248, 0.96));
+    }
+
+    .signal-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px 14px;
+      align-items: flex-start;
+    }
+
+    .meter {
+      margin-top: 12px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(23, 27, 32, 0.08);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--navy));
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mini-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(23, 27, 32, 0.06);
+    }
+
+    .flow-lane {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .flow-node {
+      min-width: 110px;
+      max-width: 230px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      line-height: 1.6;
+    }
+
+    .flow-arrow {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 18px;
     }
 
     .story-list,
@@ -320,6 +409,7 @@
 
     @media (max-width: 980px) {
       .hero,
+      .brief-grid,
       .theme-grid,
       .two-col {
         grid-template-columns: 1fr;
@@ -340,6 +430,7 @@
       </header>
 
       <section class="section" id="front"></section>
+      <section class="section" id="briefing"></section>
       <section class="section" id="top-news"></section>
       <section class="section" id="theme-news"></section>
       <section class="section" id="source-desk"></section>
@@ -535,7 +626,7 @@
         </div>
         <h1>株クラ朝刊</h1>
         <p class="sub">ニュース内容を主役に、朝に読む順番で整理するダイジェストです。</p>
-        <div class="navline">一面トップ / 主要ニュース / テーマ別ニュース / ソース棚 / 銘柄メモ / 0件日運用 / Markdown / JSON</div>
+        <div class="navline">一面トップ / 図解ブリーフ / 主要ニュース / テーマ別ニュース / ソース棚 / 銘柄メモ / 0件日運用 / Markdown / JSON</div>
       `;
     }
 
@@ -627,6 +718,105 @@
             }).join("")}
           </div>
         ` : '<div class="empty">一面トップ以外の主要ニュースはまだありません。</div>'}
+      `;
+    }
+
+    function splitFlowChain(chain) {
+      return safe(chain, "")
+        .split(/->|→|⇒/)
+        .map((item) => safe(item, "").trim())
+        .filter(Boolean);
+    }
+
+    function renderFlowCard(entry) {
+      const nodes = uniq(
+        [entry.rootTheme, ...arr(entry.steps), entry.target],
+        (item) => norm(item)
+      ).slice(0, 5);
+
+      return `
+        <article class="flow-card">
+          <div class="badge-row">
+            <span class="badge ${entry.kind === "watch" ? "green" : "navy"}">${esc(entry.kind === "watch" ? "監視フロー" : "本命フロー")}</span>
+          </div>
+          <h4 style="margin-top:10px;">${esc(entry.title)}</h4>
+          <div class="flow-lane">
+            ${nodes.map((node, index) => `
+              ${index ? '<span class="flow-arrow">→</span>' : ""}
+              <div class="flow-node">${esc(clip(node, 46))}</div>
+            `).join("")}
+          </div>
+          <p class="small"><strong>次に見る:</strong> ${esc(clip(entry.note, 84))}</p>
+          ${entry.risk ? `<p class="small"><strong>弱さ:</strong> ${esc(clip(entry.risk, 84))}</p>` : ""}
+        </article>
+      `;
+    }
+
+    function renderBriefing(data) {
+      const newsIndex = buildNewsIndex(collectNews(data));
+      const themes = (arr(data.investable_themes).length ? arr(data.investable_themes) : arr(data.market_backdrop)).slice(0, 4);
+      const mentionMax = Math.max(...themes.map((theme) => Number(theme.mention_count) || 0), 1);
+      const picks = [
+        ...arr(data.direct_picks),
+        ...arr(data.associative_picks || data.stock_picks),
+        ...arr(data.watch_candidates),
+      ].slice(0, 2);
+      const flows = picks.length
+        ? picks.map((pick) => ({
+            kind: arr(data.watch_candidates).some((item) => item.code === pick.code) ? "watch" : "pick",
+            title: `${pick.name} (${pick.code})`,
+            rootTheme: pick.root_theme || "関連テーマ",
+            steps: splitFlowChain(pick.chain),
+            target: `${pick.name} (${pick.code})`,
+            note: pick.catalyst || pick.reasoning,
+            risk: pick.risk,
+          }))
+        : themes.slice(0, 2).map((theme) => ({
+            kind: "watch",
+            title: theme.theme,
+            rootTheme: theme.theme,
+            steps: arr(theme.beneficiary_processes).slice(0, 3),
+            target: "関連銘柄を監視",
+            note: theme.why_it_matters || "次のニュース待ち",
+            risk: "",
+          }));
+
+      return `
+        <div class="section-head">
+          <div>
+            <p class="label">Visual Brief</p>
+            <h3>図解ブリーフ</h3>
+            <p class="desc">テーマの強さと、テーマから銘柄までの流れを図で把握する欄です。</p>
+          </div>
+        </div>
+        <div class="brief-grid">
+          <div class="signal-stack">
+            ${themes.length ? themes.map((theme, index) => {
+              const meter = Math.max(22, Math.round(((Number(theme.mention_count) || 0) / mentionMax) * 100));
+              return `
+                <article class="signal-card">
+                  <div class="signal-head">
+                    <div>
+                      <p class="label">Theme ${index + 1}</p>
+                      <h4>${esc(theme.theme)}</h4>
+                    </div>
+                    <span class="badge ${index === 0 ? "red" : "navy"}">${esc(`${theme.mention_count}件`)}</span>
+                  </div>
+                  <p class="body">${esc(clip(theme.why_it_matters || "要点整理中", 120))}</p>
+                  <div class="meter"><div class="meter-fill" style="width:${meter}%"></div></div>
+                  ${arr(theme.beneficiary_processes).length ? `<div class="chip-row">${arr(theme.beneficiary_processes).slice(0, 3).map((item) => `<span class="mini-chip">${esc(item)}</span>`).join("")}</div>` : ""}
+                  <div class="card" style="margin-top:12px;">
+                    <p class="label">Story Ref</p>
+                    ${renderStoryRefList(theme.news_items, newsIndex)}
+                  </div>
+                </article>
+              `;
+            }).join("") : '<div class="empty">図解に使えるテーマがまだありません。</div>'}
+          </div>
+          <div class="flow-stack">
+            ${flows.map((entry) => renderFlowCard(entry)).join("")}
+          </div>
+        </div>
       `;
     }
 
@@ -788,6 +978,7 @@
     function render(data) {
       $("masthead").innerHTML = renderMasthead(data);
       $("front").innerHTML = renderFront(data);
+      $("briefing").innerHTML = renderBriefing(data);
       $("top-news").innerHTML = renderTopNews(data);
       $("theme-news").innerHTML = renderThemeNews(data);
       $("source-desk").innerHTML = renderSourceDesk(data);
@@ -798,7 +989,7 @@
 
     function renderError(error) {
       $("masthead").innerHTML = `<div class="error">latest-analysis-full.json の読み込みに失敗しました: ${esc(error.message)}</div>`;
-      ["front", "top-news", "theme-news", "source-desk", "stock-memo", "zero-day", "footer"]
+      ["front", "briefing", "top-news", "theme-news", "source-desk", "stock-memo", "zero-day", "footer"]
         .forEach((id) => { $(id).innerHTML = '<div class="empty">表示に必要なデータを読み込めませんでした。</div>'; });
     }
 

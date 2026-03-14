@@ -182,6 +182,7 @@ const MAX_WATCH_CANDIDATES       = 3;
 const MAX_PICK_SUPPORTING_NEWS   = 2;
 const MAX_NEXT_CHECKS            = 4;
 const MAX_SOURCE_REFERENCES      = 8;
+const MAX_FALLBACK_SOURCE_REFERENCES = 3;
 const MAX_HYPOTHESIS_SOURCES     = 4;
 const MAX_THEME_SUMMARY_LEN      = 120;
 const MAX_PICK_TEXT_LEN          = 130;
@@ -1713,6 +1714,59 @@ function dedupeSourceReferences(items: SourceReference[]): SourceReference[] {
     .slice(0, MAX_SOURCE_REFERENCES);
 }
 
+function sourceReferenceIdentityKey(
+  item: Pick<SourceReference, "headline" | "url"> | Pick<ThemeNewsItem, "headline" | "url">
+): string | undefined {
+  const urlKey = sanitizeNewsUrl(item.url);
+  if (urlKey) return `url:${urlKey}`;
+  return normalizeHeadlineKey(item.headline);
+}
+
+function keysOverlap(left: string, right: string): boolean {
+  return left === right || left.includes(right) || right.includes(left);
+}
+
+function filterSourceReferencesAgainstThemeNews(
+  items: SourceReference[],
+  themes: TrendingTheme[]
+): SourceReference[] {
+  const themeKeys = themes
+    .flatMap((theme) => theme.news_items ?? [])
+    .map((item) => sourceReferenceIdentityKey(item))
+    .filter((key): key is string => !!key);
+
+  if (themeKeys.length === 0) return items;
+
+  return items.filter((item) => {
+    const key = sourceReferenceIdentityKey(item);
+    if (!key) return true;
+    return !themeKeys.some((themeKey) => keysOverlap(themeKey, key));
+  });
+}
+
+function sourceReferenceRelatesToThemes(
+  item: SourceReference,
+  themes: TrendingTheme[]
+): boolean {
+  const key = sourceReferenceIdentityKey(item);
+  const haystack = normalizeMatchText([item.headline, item.theme ?? ""].join(" "));
+
+  return themes.some((theme) => {
+    const themeKey = normalizeHeadlineKey(theme.theme);
+    if (themeKey && (haystack.includes(themeKey) || themeKey.includes(haystack))) {
+      return true;
+    }
+
+    return (theme.news_items ?? []).some((news) => {
+      const newsKey = sourceReferenceIdentityKey(news);
+      if (key && newsKey && keysOverlap(newsKey, key)) return true;
+
+      const newsText = normalizeMatchText([news.headline, news.summary ?? ""].join(" "));
+      return !!haystack && !!newsText && (newsText.includes(haystack) || haystack.includes(newsText));
+    });
+  });
+}
+
 function dedupeHeadlineStrings(items: string[], limit = MAX_PICK_SUPPORTING_NEWS): string[] {
   const deduped = new Map<string, string>();
 
@@ -2381,7 +2435,7 @@ function buildUsedSourceReferences(
   return [
     ...marketBackdrop.flatMap((theme) => (
       theme.news_items ?? []
-    ).slice(0, 2).map((item) => ({
+    ).slice(0, 1).map((item) => ({
       source: item.source,
       headline: item.headline,
       url: item.url,
@@ -2399,7 +2453,7 @@ function buildUsedSourceReferences(
     }))),
     ...investableThemes.flatMap((theme) => (
       theme.news_items ?? []
-    ).slice(0, 2).map((item) => ({
+    ).slice(0, 1).map((item) => ({
       source: item.source,
       headline: item.headline,
       url: item.url,
@@ -2453,13 +2507,20 @@ function hydrateAnalysisSources(
     result.next_check_guidance ?? [],
     noIdeaDay
   );
+  const themedSources = [...marketBackdrop, ...investableThemes, ...trendingThemes];
+  const explicitSourceList = filterSourceReferencesAgainstThemeNews(
+    hydrateSourceReferencesFromInputs(result.source_list ?? [], tweets),
+    themedSources
+  ).filter((item) => sourceReferenceRelatesToThemes(item, themedSources));
+  const fallbackSourceList = hydrateSourceReferencesFromInputs(sourceSeed, tweets)
+    .slice(0, MAX_FALLBACK_SOURCE_REFERENCES);
 
   const hydratedResult = {
     ...result,
     market_backdrop: marketBackdrop,
     investable_themes: investableThemes,
     trending_themes: trendingThemes,
-    source_list: hydrateSourceReferencesFromInputs(sourceSeed, tweets),
+    source_list: explicitSourceList.length > 0 ? explicitSourceList : fallbackSourceList,
     hypothesis_sources: buildHypothesisSources(xContext),
   };
 
