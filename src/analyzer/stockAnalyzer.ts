@@ -47,7 +47,7 @@ export interface SourceReference {
   headline: string;
   url?: string;
   timestamp?: string;
-  role?: "backdrop" | "investable" | "sector_watch" | "process_watch";
+  role?: "backdrop" | "investable" | "sector_watch" | "process_watch" | "hypothesis";
   theme?: string;
 }
 
@@ -75,7 +75,7 @@ export interface ProcessWatchItem {
 
 export interface StockAnalysisResult {
   analysis_date:    string;
-  trending_themes:  TrendingTheme[];
+  trending_themes:  TrendingTheme[]; 
   stock_picks:      StockPick[];
   watch_candidates?: StockPick[];
   market_backdrop?: TrendingTheme[];
@@ -88,6 +88,7 @@ export interface StockAnalysisResult {
   next_check_guidance?: NextCheckGuidance[];
   market_sentiment: string;
   source_list?:     SourceReference[];
+  hypothesis_sources?: SourceReference[];
 }
 
 interface OpenAIChatCompletionResponse {
@@ -172,7 +173,7 @@ const SOURCE_ORDER       = ["kabutan", "minkabu", "yahoo", "x"] as const;
 const MAX_THEME_COUNT            = 5;
 const MAX_BACKDROP_THEMES        = 2;
 const MAX_INVESTABLE_THEME_COUNT = 4;
-const MAX_THEME_NEWS_ITEMS       = 2;
+const MAX_THEME_NEWS_ITEMS       = 3;
 const MAX_THEME_KEY_TWEETS       = 2;
 const MAX_STOCK_PICKS            = 6;
 const MAX_ASSOCIATIVE_PICKS      = 4;
@@ -181,8 +182,10 @@ const MAX_WATCH_CANDIDATES       = 3;
 const MAX_PICK_SUPPORTING_NEWS   = 2;
 const MAX_NEXT_CHECKS            = 4;
 const MAX_SOURCE_REFERENCES      = 8;
+const MAX_HYPOTHESIS_SOURCES     = 4;
 const MAX_THEME_SUMMARY_LEN      = 120;
 const MAX_PICK_TEXT_LEN          = 130;
+const X_TOPIC_BUCKET_MS          = 2 * 60 * 60 * 1_000;
 const ANALYSIS_OUTPUT_DIR        = path.resolve(__dirname, "../../tmp");
 const FULL_ANALYSIS_JSON_PATH    = path.join(ANALYSIS_OUTPUT_DIR, "latest-analysis-full.json");
 const FULL_ANALYSIS_MD_PATH      = path.join(ANALYSIS_OUTPUT_DIR, "latest-analysis-full.md");
@@ -705,6 +708,10 @@ function sourceRank(source: Tweet["source"]): number {
   return SOURCE_ORDER.indexOf(source as (typeof SOURCE_ORDER)[number]);
 }
 
+function normalizeAccountKey(value: string): string {
+  return value.trim().replace(/^@+/, "").toLowerCase();
+}
+
 function pickPreferredDuplicate(current: Tweet, candidate: Tweet): Tweet {
   const currentRank = sourceRank(current.source);
   const candidateRank = sourceRank(candidate.source);
@@ -723,24 +730,81 @@ function pickPreferredDuplicate(current: Tweet, candidate: Tweet): Tweet {
     : current;
 }
 
+function pickPreferredXDuplicate(current: Tweet, candidate: Tweet): Tweet {
+  const currentSignal = scoreXPromptSignal(current);
+  const candidateSignal = scoreXPromptSignal(candidate);
+  if (candidateSignal !== currentSignal) {
+    return candidateSignal > currentSignal ? candidate : current;
+  }
+
+  const currentHasStatusUrl = /\/status\/\d+/i.test(current.url ?? "");
+  const candidateHasStatusUrl = /\/status\/\d+/i.test(candidate.url ?? "");
+  if (candidateHasStatusUrl !== currentHasStatusUrl) {
+    return candidateHasStatusUrl ? candidate : current;
+  }
+
+  return pickPreferredDuplicate(current, candidate);
+}
+
+function xExactIdentityKey(tweet: Tweet): string {
+  const statusUrl = (tweet.url ?? "").trim();
+  if (/\/status\/\d+/i.test(statusUrl)) return `url:${statusUrl}`;
+
+  return [
+    tweet.source,
+    normalizeAccountKey(tweet.username),
+    normalizeXPromptIdentity(tweet.text ?? ""),
+  ].join("|");
+}
+
+function xTopicBucketKey(tweet: Tweet): string | undefined {
+  if (tweet.source !== "x") return undefined;
+  const label = detectXClusterLabel(tweet);
+  if (!label) return undefined;
+
+  const timestamp = new Date(tweet.timestamp).getTime();
+  if (Number.isNaN(timestamp)) return undefined;
+
+  return [
+    normalizeAccountKey(tweet.username),
+    normalizeHeadlineKey(label),
+    Math.floor(timestamp / X_TOPIC_BUCKET_MS),
+  ].join("|");
+}
+
 function dedupeAnalysisTweets(tweets: Tweet[]): Tweet[] {
-  const dedupedX: Tweet[] = [];
+  const exactDedupedX = new Map<string, Tweet>();
+  const topicDedupedX = new Map<string, Tweet>();
   const dedupedNews = new Map<string, Tweet>();
 
   for (const tweet of tweets) {
     if (tweet.source === "x") {
-      dedupedX.push(tweet);
+      const exactKey = xExactIdentityKey(tweet);
+      const current = exactDedupedX.get(exactKey);
+      exactDedupedX.set(exactKey, current ? pickPreferredXDuplicate(current, tweet) : tweet);
       continue;
     }
 
     const headline = tweet.headline ?? tweet.text;
-    const key = normalizeHeadlineKey(headline);
+    const urlKey = sanitizeNewsUrl(tweet.url);
+    const key = urlKey ? `url:${urlKey}` : normalizeHeadlineKey(headline);
     if (!key) continue;
-    const current = dedupedNews.get(key);
-    dedupedNews.set(key, current ? pickPreferredDuplicate(current, tweet) : tweet);
+    const overlapKey = urlKey ? key : findOverlappingHeadlineKey(dedupedNews, key) ?? key;
+    const current = dedupedNews.get(overlapKey);
+    dedupedNews.set(overlapKey, current ? pickPreferredDuplicate(current, tweet) : tweet);
   }
 
-  return [...dedupedX, ...dedupedNews.values()].sort(
+  for (const tweet of exactDedupedX.values()) {
+    const topicKey = xTopicBucketKey(tweet);
+    if (!topicKey) {
+      topicDedupedX.set(`${xExactIdentityKey(tweet)}|loose`, tweet);
+      continue;
+    }
+    const current = topicDedupedX.get(topicKey);
+    topicDedupedX.set(topicKey, current ? pickPreferredXDuplicate(current, tweet) : tweet);
+  }
+
+  return [...topicDedupedX.values(), ...dedupedNews.values()].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
 }
@@ -1553,6 +1617,7 @@ function sanitizeNewsUrl(url?: string): string | undefined {
 function preferredRoleRank(role?: SourceReference["role"]): number {
   if (role === "investable") return 4;
   if (role === "sector_watch") return 3;
+  if (role === "hypothesis") return 2;
   if (role === "process_watch") return 2;
   return role === "backdrop" ? 1 : 0;
 }
@@ -1610,9 +1675,13 @@ function dedupeThemeNewsItems(items: ThemeNewsItem[]): ThemeNewsItem[] {
   const deduped = new Map<string, ThemeNewsItem>();
 
   for (const item of items) {
-    const key = normalizeHeadlineKey(item.headline);
+    const key = sanitizeNewsUrl(item.url)
+      ? `url:${sanitizeNewsUrl(item.url)}`
+      : normalizeHeadlineKey(item.headline);
     if (!key) continue;
-    const overlapKey = findOverlappingHeadlineKey(deduped, key) ?? key;
+    const overlapKey = key.startsWith("url:")
+      ? key
+      : findOverlappingHeadlineKey(deduped, key) ?? key;
     const current = deduped.get(overlapKey);
     deduped.set(overlapKey, current ? preferThemeNewsItem(current, item) : item);
   }
@@ -1856,6 +1925,12 @@ function themeHeadlineKeys(theme: TrendingTheme): string[] {
     .filter(Boolean);
 }
 
+function themeProcessKeys(theme: TrendingTheme): string[] {
+  return (theme.beneficiary_processes ?? [])
+    .map((item) => normalizeMatchText(item))
+    .filter(Boolean);
+}
+
 function themesSubstantiallyOverlap(a: TrendingTheme, b: TrendingTheme): boolean {
   const aKey = themeIdentityKey(a);
   const bKey = themeIdentityKey(b);
@@ -1865,9 +1940,22 @@ function themesSubstantiallyOverlap(a: TrendingTheme, b: TrendingTheme): boolean
 
   const aNewsKeys = themeHeadlineKeys(a);
   const bNewsKeys = themeHeadlineKeys(b);
-  return aNewsKeys.some((left) => bNewsKeys.some((right) => (
+  if (aNewsKeys.some((left) => bNewsKeys.some((right) => (
     left === right || left.includes(right) || right.includes(left)
-  )));
+  )))) {
+    return true;
+  }
+
+  const aEvidence = combineThemeEvidence(a);
+  const bEvidence = combineThemeEvidence(b);
+  if ((aKey && bEvidence.includes(aKey)) || (bKey && aEvidence.includes(bKey))) {
+    return true;
+  }
+
+  const aProcesses = new Set(themeProcessKeys(a));
+  const bProcesses = themeProcessKeys(b);
+  const sharedProcesses = bProcesses.filter((item) => aProcesses.has(item)).length;
+  return sharedProcesses >= 2;
 }
 
 function isEligibleInvestableTheme(
@@ -2203,10 +2291,23 @@ function parseSourceList(value: unknown): SourceReference[] {
       headline,
       url: sanitizeNewsUrl(pickString(record, "url", "u") || undefined),
       timestamp: pickString(record, "timestamp", "ts") || undefined,
+      role: normalizeSourceReferenceRole(record.role ?? record.r),
+      theme: pickString(record, "theme", "t") || undefined,
     });
   }
 
   return dedupeSourceReferences(items);
+}
+
+function normalizeSourceReferenceRole(value: unknown): SourceReference["role"] | undefined {
+  const role = asString(value).trim().toLowerCase();
+  if (!role) return undefined;
+  if (role === "backdrop") return "backdrop";
+  if (role === "investable") return "investable";
+  if (role === "sector_watch") return "sector_watch";
+  if (role === "process_watch") return "process_watch";
+  if (role === "hypothesis") return "hypothesis";
+  return undefined;
 }
 
 function inputHeadlineKey(tweet: Tweet): string {
@@ -2216,8 +2317,15 @@ function inputHeadlineKey(tweet: Tweet): string {
 function findMatchingInputPost(
   headline: string,
   source: ThemeNewsItem["source"] | SourceReference["source"],
-  tweets: Tweet[]
+  tweets: Tweet[],
+  url?: string
 ): Tweet | undefined {
+  const sanitizedUrl = sanitizeNewsUrl(url);
+  if (sanitizedUrl) {
+    const urlMatch = tweets.find((tweet) => tweet.source === source && sanitizeNewsUrl(tweet.url) === sanitizedUrl);
+    if (urlMatch) return urlMatch;
+  }
+
   const key = normalizeHeadlineKey(headline);
   if (!key) return undefined;
 
@@ -2236,7 +2344,7 @@ function findMatchingInputPost(
 
 function hydrateThemeNewsItemsFromInputs(items: ThemeNewsItem[], tweets: Tweet[]): ThemeNewsItem[] {
   return dedupeThemeNewsItems(items.map((item) => {
-    const match = findMatchingInputPost(item.headline, item.source, tweets);
+    const match = findMatchingInputPost(item.headline, item.source, tweets, item.url);
     return {
       ...item,
       url: sanitizeNewsUrl(item.url) ?? sanitizeNewsUrl(match?.url),
@@ -2247,7 +2355,7 @@ function hydrateThemeNewsItemsFromInputs(items: ThemeNewsItem[], tweets: Tweet[]
 
 function hydrateSourceReferencesFromInputs(items: SourceReference[], tweets: Tweet[]): SourceReference[] {
   return dedupeSourceReferences(items.map((item) => {
-    const match = findMatchingInputPost(item.headline, item.source, tweets);
+    const match = findMatchingInputPost(item.headline, item.source, tweets, item.url);
     return {
       ...item,
       url: sanitizeNewsUrl(item.url) ?? sanitizeNewsUrl(match?.url),
@@ -2273,7 +2381,7 @@ function buildUsedSourceReferences(
   return [
     ...marketBackdrop.flatMap((theme) => (
       theme.news_items ?? []
-    ).slice(0, 1).map((item) => ({
+    ).slice(0, 2).map((item) => ({
       source: item.source,
       headline: item.headline,
       url: item.url,
@@ -2291,7 +2399,7 @@ function buildUsedSourceReferences(
     }))),
     ...investableThemes.flatMap((theme) => (
       theme.news_items ?? []
-    ).map((item) => ({
+    ).slice(0, 2).map((item) => ({
       source: item.source,
       headline: item.headline,
       url: item.url,
@@ -2302,7 +2410,36 @@ function buildUsedSourceReferences(
   ];
 }
 
-function hydrateAnalysisSources(result: StockAnalysisResult, tweets: Tweet[]): StockAnalysisResult {
+function buildHypothesisSources(xContext?: XPromptContext): SourceReference[] {
+  if (!xContext) return [];
+
+  const seeded: SourceReference[] = [
+    ...xContext.clusters.map((cluster) => ({
+      source: "x" as const,
+      headline: truncate(cluster.representative.text ?? cluster.cue, 100),
+      url: cluster.representative.url,
+      timestamp: cluster.representative.timestamp,
+      role: "hypothesis" as const,
+      theme: cluster.label,
+    })),
+    ...xContext.selectedTweets.map((tweet) => ({
+      source: "x" as const,
+      headline: truncate(tweet.text ?? "", 100),
+      url: tweet.url,
+      timestamp: tweet.timestamp,
+      role: "hypothesis" as const,
+      theme: detectXClusterLabel(tweet),
+    })),
+  ];
+
+  return dedupeSourceReferences(seeded).slice(0, MAX_HYPOTHESIS_SOURCES);
+}
+
+function hydrateAnalysisSources(
+  result: StockAnalysisResult,
+  tweets: Tweet[],
+  xContext?: XPromptContext
+): StockAnalysisResult {
   const marketBackdrop = (result.market_backdrop ?? []).map((theme) => hydrateThemeFromInputs(theme, tweets));
   const investableThemes = (result.investable_themes ?? []).map((theme) => hydrateThemeFromInputs(theme, tweets));
   const trendingThemes = result.trending_themes.map((theme) => hydrateThemeFromInputs(theme, tweets));
@@ -2323,6 +2460,7 @@ function hydrateAnalysisSources(result: StockAnalysisResult, tweets: Tweet[]): S
     investable_themes: investableThemes,
     trending_themes: trendingThemes,
     source_list: hydrateSourceReferencesFromInputs(sourceSeed, tweets),
+    hypothesis_sources: buildHypothesisSources(xContext),
   };
 
   return {
@@ -4019,6 +4157,103 @@ async function saveFullAnalysisArtifacts(result: StockAnalysisResult): Promise<v
   );
 }
 
+function formatAnalysisDate(date = new Date()): string {
+  return date.toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function buildNoDataAnalysisResult(analysisDate: string): StockAnalysisResult {
+  const backdropTheme: TrendingTheme = {
+    theme: "背景相場中心（投稿取得0件）",
+    mention_count: 0,
+    key_tweets: [
+      "投稿取得が0件のため、個別材料より外部環境と主導株の出来高確認を優先する日です。",
+    ],
+    why_it_matters:
+      "取得投稿が0件のため新しい個別テーマは形成されていません。まずは指数・為替・金利・原油などの地合い確認を優先します。",
+    beneficiary_processes: ["外部環境確認", "主導株の出来高確認"],
+  };
+
+  return {
+    analysis_date: analysisDate,
+    trending_themes: [backdropTheme],
+    stock_picks: [],
+    watch_candidates: [],
+    market_backdrop: [backdropTheme],
+    investable_themes: [],
+    direct_picks: [],
+    associative_picks: [],
+    sector_watch: [
+      {
+        theme: backdropTheme.theme,
+        sector: "市況感応株",
+        why: "為替・金利・原油などの外部環境変化を受けやすく、個別材料不在日の温度感を測りやすいです。",
+        promotion_conditions: [
+          "ドル円・金利・原油の方向感がそろう",
+          "主力銘柄に出来高が戻る",
+        ],
+      },
+      {
+        theme: backdropTheme.theme,
+        sector: "大型主導株",
+        why: "新規材料が薄い日でも資金が集まりやすく、次のテーマ再点火の起点を確認しやすいです。",
+        promotion_conditions: [
+          "寄り後30分の売買代金が増える",
+          "関連株に同時反応が出る",
+        ],
+      },
+    ],
+    process_watch: [
+      {
+        theme: backdropTheme.theme,
+        process: "外部環境確認",
+        focus: "指数先物・ドル円・金利・原油の変化から、その日の地合いを先に確認します。",
+        promotion_conditions: [
+          "寄り前後で指数先物の方向感が明確になる",
+          "ドル円か原油に継続的な変化が出る",
+        ],
+      },
+      {
+        theme: backdropTheme.theme,
+        process: "主導株の出来高確認",
+        focus: "主導銘柄の売買代金と継続材料の有無から、テーマ再形成の兆しを見ます。",
+        promotion_conditions: [
+          "主導株の出来高が前日比で増える",
+          "IRや関連ニュースが再点火する",
+        ],
+      },
+    ],
+    next_checks: [
+      "指数先物・ドル円・金利・原油など、背景相場の方向感を先に確認",
+      "主導株の売買代金と出来高が戻るかを確認",
+      "IRやニュース再点火でテーマが再形成されるかを確認",
+    ],
+    next_check_guidance: [
+      {
+        theme: backdropTheme.theme,
+        role: "backdrop",
+        sectors: ["市況感応株", "大型主導株"],
+        processes: ["外部環境確認", "主導株の出来高確認"],
+        triggers: [
+          "指数先物・ドル円・金利・原油の方向感",
+          "寄り後30分の出来高増加",
+          "IR・関連ニュースの再点火",
+        ],
+      },
+    ],
+    market_sentiment:
+      "投稿取得0件のため本日は背景相場中心です。まずは外部環境と主導株の出来高確認を優先します。",
+    source_list: [],
+    hypothesis_sources: [],
+  };
+}
+
 function getOpenAIKey(): string {
   const apiKey = process.env.OPENAI_API_KEY ?? "";
   if (!apiKey) throw new Error("OPENAI_API_KEY が未設定です");
@@ -4177,27 +4412,12 @@ async function callCompactOpenAI(userPrompt: string, attempt: number): Promise<S
 export async function analyzeTweets(tweets: Tweet[]): Promise<StockAnalysisResult> {
   if (tweets.length === 0) {
     console.warn("[analyzer] 投稿が 0 件のため分析をスキップ");
-    return {
-      analysis_date:    new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
-      trending_themes:  [],
-      stock_picks:      [],
-      watch_candidates: [],
-      market_backdrop:  [],
-      investable_themes: [],
-      direct_picks:     [],
-      associative_picks: [],
-      market_sentiment: "分析対象の投稿がありませんでした",
-    };
+    const noDataResult = buildNoDataAnalysisResult(formatAnalysisDate());
+    await saveFullAnalysisArtifacts(noDataResult);
+    return noDataResult;
   }
 
-  const analysisDate = new Date().toLocaleString("ja-JP", {
-    timeZone:  "Asia/Tokyo",
-    year:      "numeric",
-    month:     "2-digit",
-    day:       "2-digit",
-    hour:      "2-digit",
-    minute:    "2-digit",
-  });
+  const analysisDate = formatAnalysisDate();
 
   const analysisTweets = dedupeAnalysisTweets(tweets);
   const grouped    = groupBySource(analysisTweets);
@@ -4241,7 +4461,7 @@ export async function analyzeTweets(tweets: Tweet[]): Promise<StockAnalysisResul
       const rawResult = await callCompactOpenAI(userPrompt, attempt);
       const watchDebugLogs: string[] = [];
       const refinedResult = refineAnalysisStructure(rawResult, xContext, watchDebugLogs);
-      const result = hydrateAnalysisSources(refinedResult, analysisTweets);
+      const result = hydrateAnalysisSources(refinedResult, analysisTweets, xContext);
       if (ANALYZER_DEBUG_X && watchDebugLogs.length > 0) {
         for (const line of watchDebugLogs.slice(0, 8)) {
           console.log(`[analyzer][x][watch] ${line}`);
