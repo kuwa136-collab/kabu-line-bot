@@ -1,69 +1,168 @@
 {
-  "analysis_date": "2026-03-19 20:06",
+  "analysis_date": "2026-03-20 08:06",
   "trending_themes": [
     {
-      "theme": "中東情勢と原油価格",
-      "mention_count": 10,
+      "theme": "中東情勢の緊張で波及を受ける資源・海運保険・代替電源",
+      "mention_count": 12,
       "key_tweets": [
-        "香港・中国市場が原油高を受け反落",
-        "東京市場も原油高懸念で急反落と報道"
+        "原油高は石油関連企業の収益変動をもたらす",
+        "ガソリン高はEVや代替燃料（CNG、バイオガス）への需要追い風となる可能性"
       ],
-      "why_it_matters": "原油急騰と中東情勢が市場のリスク回避を強め、エネルギー供給面の不透明感を高めているため重要。",
+      "why_it_matters": "イラン絡みの地政学リスクで原油高懸念が高まり、燃料コスト構造と代替燃料需要が影響を受けるため",
       "news_items": [
         {
-          "headline": "東京市場サマリー（19日）",
-          "summary": "東京株は原油高を懸念して急反落したと報道された。",
-          "source": "yahoo",
-          "url": "https://finance.yahoo.co.jp/news/detail/4ade6abcbb0c1bc99e01de18f06be6f84ab95e56",
-          "timestamp": "2026-03-19T19:48:00+09:00"
+          "headline": "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まる",
+          "summary": "米市場で原油高を警戒する動きがあり中東情勢が市場に影響していると報告",
+          "source": "kabutan",
+          "url": "https://kabutan.jp/news/marketnews/?&b=n202603200138",
+          "timestamp": "2026-03-20T07:59:00+09:00"
         },
         {
-          "headline": "19日の香港市場概況：ハンセン指数は4日ぶり反落、原油急騰などでリスク回避姿勢が強まる",
-          "summary": "原油急騰がリスク回避を強め、香港市場が反落した。",
+          "headline": "アングル：イラン戦争によるガソリン価格高騰、ＥＶ販売に追い風か",
+          "summary": "ロイター記事がガソリン高でEV販売が追い風になる可能性を指摘",
+          "source": "yahoo",
+          "url": "https://finance.yahoo.co.jp/news/detail/313ef9821d04455bbdc19e043110f1edba04f783",
+          "timestamp": "2026-03-20T07:53:00+09:00"
+        }
+      ],
+      "beneficiary_processes": [
+        "資源開発",
+        "原油輸送・海運保険",
+        "代替電源・LNG"
+      ]
+    },
+    {
+      "theme": "米国株安・リスクオフで日本株先物に下押し圧力",
+      "mention_count": 8,
+      "key_tweets": [
+        "NYダウ下落は短期的なグローバルリスク回避につながる",
+        "日経先物の下落は日本市場の寄り付きに直接影響"
+      ],
+      "why_it_matters": "米国市場の続落とシカゴ日経先物の下落は日本株の寄り付き警戒要因となるため",
+      "news_items": [
+        {
+          "headline": "ＮＹダウは203ドル安と2日続落",
+          "summary": "米株が続落しリスクオフムードが続いていると報告",
           "source": "kabutan",
-          "url": "https://kabutan.jp/news/marketnews/?&b=n202603191204",
-          "timestamp": "2026-03-19T18:34:00+09:00"
+          "url": "https://kabutan.jp/news/marketnews/?&b=n202603200136",
+          "timestamp": "2026-03-20T07:43:00+09:00"
+        },
+        {
+          "headline": "シカゴ日経平均先物 大取終値比 165円安",
+          "summary": "シカゴ日経先物が下落し日本市場に下押し圧力があると伝える",
+          "source": "minkabu",
+          "url": "https://minkabu.jp/news/4470261",
+          "timestamp": "2026-03-20T07:42:00+09:00"
         }
       ],
       "beneficiary_processes": []
     }
   ],
   "stock_picks": [],
-  "watch_candidates": [],
-  "market_sentiment": "背景相場中心。中東情勢と原油価格を踏まえ、物流・空運・燃料費の具体波及待ち。",
+  "watch_candidates": [
+    {
+      "rank": 1,
+      "code": "1963",
+      "name": "日揮ホールディングス",
+      "chain": "中東情勢と原油価格 -> 資源開発 -> 原油輸送・海運保険 -> 日揮ホールディングスの関連事業",
+      "reasoning": "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まるを起点に、当事者そのものではなく資源開発 -> 原油輸送・海運保険の工程へ波及したとき、日揮ホールディングスのlng・代替電源が恩恵を受けやすいため。",
+      "confidence": 4,
+      "risk": "テーマ進展が一過性なら物色が続かず、業績への波及も限定的になりうる。",
+      "catalyst": "資源開発の受注・提携・設備投資計画の具体化",
+      "root_theme": "中東情勢と原油価格",
+      "supporting_news": [
+        "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まる"
+      ],
+      "benefit_type": "peripheral"
+    },
+    {
+      "rank": 2,
+      "code": "6366",
+      "name": "千代田化工建設",
+      "chain": "中東情勢と原油価格 -> 資源開発 -> 原油輸送・海運保険 -> 千代田化工建設の関連事業",
+      "reasoning": "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まるを起点に、当事者そのものではなく資源開発 -> 原油輸送・海運保険の工程へ波及したとき、千代田化工建設のlng・代替電源が恩恵を受けやすいため。 現時点では直接受益の確度はまだ高くないため監視候補に留める。",
+      "confidence": 4,
+      "risk": "事業接続はあるが、受注・提携・業績寄与の裏付けがまだ弱い。",
+      "catalyst": "資源開発の受注・提携・設備投資計画の具体化",
+      "root_theme": "中東情勢と原油価格",
+      "supporting_news": [
+        "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まる"
+      ],
+      "benefit_type": "peripheral"
+    }
+  ],
+  "market_sentiment": "日揮ホールディングス、千代田化工建設 を中心に確認。テーマの具体化はまだ途上で、受注・提携・採用事例の確認が必要。",
   "source_list": [
     {
-      "source": "yahoo",
-      "headline": "東京市場サマリー（19日）",
-      "url": "https://finance.yahoo.co.jp/news/detail/4ade6abcbb0c1bc99e01de18f06be6f84ab95e56",
-      "timestamp": "2026-03-19T19:48:00+09:00",
-      "role": "sector_watch",
-      "theme": "中東情勢と原油価格"
+      "source": "kabutan",
+      "headline": "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まる",
+      "url": "https://kabutan.jp/news/marketnews/?&b=n202603200138",
+      "timestamp": "2026-03-20T07:59:00+09:00",
+      "role": "backdrop",
+      "theme": "中東情勢の緊張で波及を受ける資源・海運保険・代替電源"
+    },
+    {
+      "source": "kabutan",
+      "headline": "ＮＹダウは203ドル安と2日続落",
+      "url": "https://kabutan.jp/news/marketnews/?&b=n202603200136",
+      "timestamp": "2026-03-20T07:43:00+09:00",
+      "role": "backdrop",
+      "theme": "米国株安・リスクオフで日本株先物に下押し圧力"
     }
   ],
   "market_backdrop": [
     {
-      "theme": "中東情勢と原油価格",
-      "mention_count": 10,
+      "theme": "中東情勢の緊張で波及を受ける資源・海運保険・代替電源",
+      "mention_count": 12,
       "key_tweets": [
-        "香港・中国市場が原油高を受け反落",
-        "東京市場も原油高懸念で急反落と報道"
+        "原油高は石油関連企業の収益変動をもたらす",
+        "ガソリン高はEVや代替燃料（CNG、バイオガス）への需要追い風となる可能性"
       ],
-      "why_it_matters": "原油急騰と中東情勢が市場のリスク回避を強め、エネルギー供給面の不透明感を高めているため重要。",
+      "why_it_matters": "イラン絡みの地政学リスクで原油高懸念が高まり、燃料コスト構造と代替燃料需要が影響を受けるため",
       "news_items": [
         {
-          "headline": "東京市場サマリー（19日）",
-          "summary": "東京株は原油高を懸念して急反落したと報道された。",
-          "source": "yahoo",
-          "url": "https://finance.yahoo.co.jp/news/detail/4ade6abcbb0c1bc99e01de18f06be6f84ab95e56",
-          "timestamp": "2026-03-19T19:48:00+09:00"
+          "headline": "NY株式：原油高警戒もイラン戦争早期終了期待で下げ止まる",
+          "summary": "米市場で原油高を警戒する動きがあり中東情勢が市場に影響していると報告",
+          "source": "kabutan",
+          "url": "https://kabutan.jp/news/marketnews/?&b=n202603200138",
+          "timestamp": "2026-03-20T07:59:00+09:00"
         },
         {
-          "headline": "19日の香港市場概況：ハンセン指数は4日ぶり反落、原油急騰などでリスク回避姿勢が強まる",
-          "summary": "原油急騰がリスク回避を強め、香港市場が反落した。",
+          "headline": "アングル：イラン戦争によるガソリン価格高騰、ＥＶ販売に追い風か",
+          "summary": "ロイター記事がガソリン高でEV販売が追い風になる可能性を指摘",
+          "source": "yahoo",
+          "url": "https://finance.yahoo.co.jp/news/detail/313ef9821d04455bbdc19e043110f1edba04f783",
+          "timestamp": "2026-03-20T07:53:00+09:00"
+        }
+      ],
+      "beneficiary_processes": [
+        "資源開発",
+        "原油輸送・海運保険",
+        "代替電源・LNG"
+      ]
+    },
+    {
+      "theme": "米国株安・リスクオフで日本株先物に下押し圧力",
+      "mention_count": 8,
+      "key_tweets": [
+        "NYダウ下落は短期的なグローバルリスク回避につながる",
+        "日経先物の下落は日本市場の寄り付きに直接影響"
+      ],
+      "why_it_matters": "米国市場の続落とシカゴ日経先物の下落は日本株の寄り付き警戒要因となるため",
+      "news_items": [
+        {
+          "headline": "ＮＹダウは203ドル安と2日続落",
+          "summary": "米株が続落しリスクオフムードが続いていると報告",
           "source": "kabutan",
-          "url": "https://kabutan.jp/news/marketnews/?&b=n202603191204",
-          "timestamp": "2026-03-19T18:34:00+09:00"
+          "url": "https://kabutan.jp/news/marketnews/?&b=n202603200136",
+          "timestamp": "2026-03-20T07:43:00+09:00"
+        },
+        {
+          "headline": "シカゴ日経平均先物 大取終値比 165円安",
+          "summary": "シカゴ日経先物が下落し日本市場に下押し圧力があると伝える",
+          "source": "minkabu",
+          "url": "https://minkabu.jp/news/4470261",
+          "timestamp": "2026-03-20T07:42:00+09:00"
         }
       ],
       "beneficiary_processes": []
@@ -72,56 +171,15 @@
   "investable_themes": [],
   "direct_picks": [],
   "associative_picks": [],
-  "sector_watch": [
-    {
-      "theme": "中東情勢と原油価格",
-      "sector": "物流",
-      "why": "中東情勢と原油価格 を受けて 物流 の反応を確認",
-      "promotion_conditions": [
-        "物流・空運・化学でコスト改善を示す記事",
-        "燃料費感応度の高い業種の月次・ガイダンス",
-        "LNG・代替電源・海運保険への波及記事"
-      ]
-    },
-    {
-      "theme": "中東情勢と原油価格",
-      "sector": "空運",
-      "why": "中東情勢と原油価格 を受けて 空運 の反応を確認",
-      "promotion_conditions": [
-        "物流・空運・化学でコスト改善を示す記事",
-        "燃料費感応度の高い業種の月次・ガイダンス",
-        "LNG・代替電源・海運保険への波及記事"
-      ]
-    }
-  ],
-  "process_watch": [
-    {
-      "theme": "中東情勢と原油価格",
-      "process": "燃料費",
-      "focus": "中東情勢と原油価格 の波及を 燃料費 で確認",
-      "promotion_conditions": [
-        "物流・空運・化学でコスト改善を示す記事",
-        "燃料費感応度の高い業種の月次・ガイダンス",
-        "LNG・代替電源・海運保険への波及記事"
-      ]
-    },
-    {
-      "theme": "中東情勢と原油価格",
-      "process": "コスト改善",
-      "focus": "中東情勢と原油価格 の波及を コスト改善 で確認",
-      "promotion_conditions": [
-        "物流・空運・化学でコスト改善を示す記事",
-        "燃料費感応度の高い業種の月次・ガイダンス",
-        "LNG・代替電源・海運保険への波及記事"
-      ]
-    }
-  ],
+  "sector_watch": [],
+  "process_watch": [],
   "next_checks": [
-    "中東情勢と原油価格: 物流 / 燃料費 / 物流・空運・化学でコスト改善を示す記事"
+    "中東情勢の緊張で波及を受ける資源・海運保険・代替電源: 物流 / 燃料費 / 物流・空運・化学でコスト改善を示す記事",
+    "米国株安・リスクオフで日本株先物に下押し圧力: 外需機械 / 為替感応度 / 外需企業の受注・ガイダンス修正"
   ],
   "next_check_guidance": [
     {
-      "theme": "中東情勢と原油価格",
+      "theme": "中東情勢の緊張で波及を受ける資源・海運保険・代替電源",
       "role": "backdrop",
       "sectors": [
         "物流",
@@ -138,6 +196,25 @@
         "物流・空運・化学でコスト改善を示す記事",
         "燃料費感応度の高い業種の月次・ガイダンス",
         "LNG・代替電源・海運保険への波及記事"
+      ]
+    },
+    {
+      "theme": "米国株安・リスクオフで日本株先物に下押し圧力",
+      "role": "backdrop",
+      "sectors": [
+        "外需機械",
+        "自動車部材",
+        "電子部品"
+      ],
+      "processes": [
+        "為替感応度",
+        "輸出採算",
+        "受注・ガイダンス"
+      ],
+      "triggers": [
+        "外需企業の受注・ガイダンス修正",
+        "輸出比率の高い業種への需給波及",
+        "為替感応度が高い企業の材料"
       ]
     }
   ],
