@@ -20,6 +20,7 @@ import accountsData      from "../config/accounts.json";
 const HEALTH_PORT  = parseInt(process.env.HEALTH_PORT ?? "8080", 10);
 const APP_VERSION  = "1.0.0";
 const START_TIME   = Date.now();
+const SCHEDULED_RUNS_ENABLED = process.env.SCHEDULED_RUNS_ENABLED === "1";
 
 // ─── 環境変数定義 ──────────────────────────────────────────────
 interface EnvSpec {
@@ -29,11 +30,12 @@ interface EnvSpec {
 }
 
 const ENV_SPECS: EnvSpec[] = [
-  { key: "LINE_CHANNEL_ACCESS_TOKEN", required: true,  description: "LINE 配信"               },
-  { key: "LINE_CHANNEL_SECRET",       required: false, description: "LINE Webhook 署名検証"    },
   { key: "OPENAI_API_KEY",            required: true,  description: "OpenAI 分析"              },
   { key: "RSS_BRIDGE_URL",            required: false, description: "RSS Bridge URL"           },
   { key: "NITTER_INSTANCE",           required: false, description: "Nitter フォールバック URL" },
+  { key: "PAGES_SITE_URL",            required: false, description: "GitHub Pages 固定URL"     },
+  { key: "PAGES_AUTO_PUSH",           required: false, description: "docs の git 自動 push"    },
+  { key: "SCHEDULED_RUNS_ENABLED",    required: false, description: "定時実行 (1で有効)"          },
 ];
 
 // ─── 環境変数検証 ──────────────────────────────────────────────
@@ -106,6 +108,7 @@ function createHealthServer(): http.Server {
           uptime_human:    formatUptime(uptimeMs),
           started_at:      new Date(START_TIME).toISOString(),
           schedule: {
+            enabled:  SCHEDULED_RUNS_ENABLED,
             morning:  "08:00 JST (毎日)",
             night:    "20:00 JST (毎日)",
             timezone: "Asia/Tokyo",
@@ -179,7 +182,7 @@ function printBanner(): void {
   const now  = new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
   console.log(`
 ${line}
-  株クラ AI 分析 LINE Bot  v${APP_VERSION}
+  株クラ AI 分析 Pages Bot  v${APP_VERSION}
   起動日時: ${now}
 ${line}`);
 }
@@ -217,7 +220,14 @@ async function main(): Promise<void> {
   setupGracefulShutdown(server);
 
   // 4. cron スケジューラー起動
-  startCron();
+  if (SCHEDULED_RUNS_ENABLED) {
+    startCron();
+  } else {
+    console.log(
+      "\n[schedule] 自動実行は停止中です。" +
+      " SCHEDULED_RUNS_ENABLED=1 のときだけ cron を起動します。"
+    );
+  }
 }
 
 main().catch((err) => {
