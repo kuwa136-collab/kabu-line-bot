@@ -21,6 +21,8 @@ const HEALTH_PORT  = parseInt(process.env.HEALTH_PORT ?? "8080", 10);
 const APP_VERSION  = "1.0.0";
 const START_TIME   = Date.now();
 const SCHEDULED_RUNS_ENABLED = process.env.SCHEDULED_RUNS_ENABLED === "1";
+const OPENAI_ANALYSIS_ENABLED = process.env.OPENAI_ANALYSIS_ENABLED === "1";
+const AUTO_PIPELINE_ENABLED = SCHEDULED_RUNS_ENABLED && OPENAI_ANALYSIS_ENABLED;
 
 // ─── 環境変数定義 ──────────────────────────────────────────────
 interface EnvSpec {
@@ -30,7 +32,8 @@ interface EnvSpec {
 }
 
 const ENV_SPECS: EnvSpec[] = [
-  { key: "OPENAI_API_KEY",            required: true,  description: "OpenAI 分析"              },
+  { key: "OPENAI_API_KEY",            required: OPENAI_ANALYSIS_ENABLED,  description: "OpenAI 分析"              },
+  { key: "OPENAI_ANALYSIS_ENABLED",   required: false, description: "OpenAI 分析実行 (1で有効)"   },
   { key: "RSS_BRIDGE_URL",            required: false, description: "RSS Bridge URL"           },
   { key: "NITTER_INSTANCE",           required: false, description: "Nitter フォールバック URL" },
   { key: "PAGES_SITE_URL",            required: false, description: "GitHub Pages 固定URL"     },
@@ -108,7 +111,9 @@ function createHealthServer(): http.Server {
           uptime_human:    formatUptime(uptimeMs),
           started_at:      new Date(START_TIME).toISOString(),
           schedule: {
-            enabled:  SCHEDULED_RUNS_ENABLED,
+            enabled:  AUTO_PIPELINE_ENABLED,
+            requested: SCHEDULED_RUNS_ENABLED,
+            openai_analysis_enabled: OPENAI_ANALYSIS_ENABLED,
             morning:  "08:00 JST (毎日)",
             night:    "20:00 JST (毎日)",
             timezone: "Asia/Tokyo",
@@ -220,12 +225,13 @@ async function main(): Promise<void> {
   setupGracefulShutdown(server);
 
   // 4. cron スケジューラー起動
-  if (SCHEDULED_RUNS_ENABLED) {
+  if (AUTO_PIPELINE_ENABLED) {
     startCron();
   } else {
     console.log(
       "\n[schedule] 自動実行は停止中です。" +
-      " SCHEDULED_RUNS_ENABLED=1 のときだけ cron を起動します。"
+      " SCHEDULED_RUNS_ENABLED=1 と OPENAI_ANALYSIS_ENABLED=1 の両方があるときだけ" +
+      " cron を起動します。"
     );
   }
 }

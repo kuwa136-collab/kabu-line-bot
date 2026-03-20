@@ -117,6 +117,8 @@ const PAGES_GIT_REMOTE = (process.env.PAGES_GIT_REMOTE ?? "origin").trim() || "o
 const PAGES_GIT_BRANCH = (process.env.PAGES_GIT_BRANCH ?? "").trim();
 const PAGES_SITE_URL = (process.env.PAGES_SITE_URL ?? "").trim();
 const SCHEDULED_RUNS_ENABLED = process.env.SCHEDULED_RUNS_ENABLED === "1";
+const OPENAI_ANALYSIS_ENABLED = process.env.OPENAI_ANALYSIS_ENABLED === "1";
+const AUTO_PIPELINE_ENABLED = SCHEDULED_RUNS_ENABLED && OPENAI_ANALYSIS_ENABLED;
 
 function nowJst(): string {
   return new Date().toLocaleString("ja-JP", {
@@ -266,6 +268,14 @@ function isGitPublishFailure(result: GitPublishResult): boolean {
   return result.status === "failed";
 }
 
+function printAutoRunDisabledBanner(): void {
+  printBanner("自動実行は停止中");
+  console.log(
+    "  SCHEDULED_RUNS_ENABLED=1 と OPENAI_ANALYSIS_ENABLED=1 の両方があるときだけ" +
+    " cron を起動します。\n"
+  );
+}
+
 export async function runFullPipeline(): Promise<void> {
   const start = Date.now();
   const session = makeSessionId();
@@ -285,6 +295,23 @@ export async function runFullPipeline(): Promise<void> {
   };
 
   let error: string | null = null;
+
+  if (!OPENAI_ANALYSIS_ENABLED) {
+    console.warn(
+      "[pipeline] OPENAI_ANALYSIS_ENABLED=1 のときだけ分析を実行します。" +
+      " 今回は何も実行しません。"
+    );
+    await writeLog({
+      timestamp: new Date().toISOString(),
+      session,
+      slot,
+      duration_ms: Date.now() - start,
+      stats,
+      error: null,
+    });
+    printBanner("Pages パイプライン 停止中 0.0s");
+    return;
+  }
 
   try {
     printStep(1, 3, `全アカウント (${stats.accounts_enabled} 件) の投稿取得`);
@@ -455,6 +482,11 @@ async function runShowLogs(n = 5): Promise<void> {
 }
 
 export function startCron(): void {
+  if (!AUTO_PIPELINE_ENABLED) {
+    printAutoRunDisabledBanner();
+    return;
+  }
+
   cron.schedule(
     CRON_MORNING,
     () => runFullPipeline().catch((err) =>
@@ -510,9 +542,8 @@ async function main(): Promise<void> {
     }
 
     default:
-      if (!SCHEDULED_RUNS_ENABLED) {
-        printBanner("自動実行は停止中");
-        console.log("  SCHEDULED_RUNS_ENABLED=1 のときだけ cron を起動します。\n");
+      if (!AUTO_PIPELINE_ENABLED) {
+        printAutoRunDisabledBanner();
         process.exit(0);
       }
       startCron();

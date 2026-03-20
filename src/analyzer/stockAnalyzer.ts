@@ -156,6 +156,7 @@ type ThemeProcessRule = {
 
 // ─── 定数 ──────────────────────────────────────────────────────
 const MODEL_ID           = process.env.OPENAI_MODEL?.trim() || "gpt-5-mini";
+const OPENAI_ANALYSIS_ENABLED = process.env.OPENAI_ANALYSIS_ENABLED === "1";
 const MAX_TOKENS         = 3200;
 const REASONING_EFFORT   = process.env.OPENAI_REASONING_EFFORT?.trim()
   || (MODEL_ID.startsWith("gpt-5.4") ? "low" : "minimal");
@@ -4316,6 +4317,9 @@ function buildNoDataAnalysisResult(analysisDate: string): StockAnalysisResult {
 }
 
 function getOpenAIKey(): string {
+  if (!OPENAI_ANALYSIS_ENABLED) {
+    throw new Error("OPENAI_ANALYSIS_ENABLED=1 のときだけ OpenAI 分析を実行します");
+  }
   const apiKey = process.env.OPENAI_API_KEY ?? "";
   if (!apiKey) throw new Error("OPENAI_API_KEY が未設定です");
   return apiKey;
